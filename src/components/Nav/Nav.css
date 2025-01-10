@@ -1,0 +1,48 @@
+.nav{
+    padding: 20px 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav .logo{
+    width: 80px;
+}
+
+.nav-links{
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    color: white;
+    font-size: 18px;
+}
+
+.nav-right{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav li{
+    cursor: pointer;
+}
+/*configurar boton*/
+.nav button{
+    background-color: aliceblue;
+    font-size: 16px;
+    color: black;
+    border: 1px solid aliceblue;
+    padding: 10px 30px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.nav button:hover{
+    background-color: thistle;
+}
+
+.nav img[src$=".png"] {
+    width: 30px; 
+    height: auto;
+}
