@@ -1,21 +1,42 @@
-import React from 'react'
-import Nav from './components/Nav/Nav'
-import {Routes} from 'react-router-dom'
-import Home from './pages/Home/Home'
-import Cart from './pages/Cart/Cart'
-import Contact from './pages/Contact/Contact'
-const App = () => {
-  return (
-    <div className='App'>
-      <Nav />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/contact' element={<Contact />} />
-      </Routes>
-    </div>
-  )
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, AuthContext } from './auth/AuthContext'; // Importa AuthProvider y AuthContext
+import { useContext } from 'react';
+import PropTypes from 'prop-types'; // Importa PropTypes
+import Login from './pages/Login/Login';
+import Home from './pages/Home/Home';
+
+// Componente de protección para rutas privadas
+function ProtectedRoute({ children }) {
+    const { isAuthenticated } = useContext(AuthContext); // Obtén el estado de autenticación
+
+    if (!isAuthenticated) {
+        return <Navigate to="/" />;  // Redirige al login si no está autenticado
+    }
+
+    return children;  // Si está autenticado, muestra el contenido protegido
 }
 
-export default App
+// Agregar validación para 'children' en las props del componente
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired, // Valida que 'children' sea un nodo React
+};
 
+function App() {
+    return (
+        <AuthProvider>  {/* Envuelve toda la app con AuthProvider */}
+            <Routes>
+                <Route path="/" element={<Login />} />
+                <Route 
+                    path="/home" 
+                    element={
+                        <ProtectedRoute>
+                            <Home />  {/* Solo se renderiza si está autenticado */}
+                        </ProtectedRoute>
+                    } 
+                />
+            </Routes>
+        </AuthProvider>
+    );
+}
+
+export default App;
