@@ -1,0 +1,25 @@
+.initial-menu{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.initial-menu h1{
+    color: black;
+    font-weight: 500;
+}
+
+.initial-menu-text{
+    max-width: 60%;
+    columns: grey;
+}
+
+.initial-menu-list{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    text-align: center;
+    margin: 20px 0px;
+    overflow-x: scroll;
+}
