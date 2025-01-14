@@ -20,5 +20,27 @@ const App = () => {
   )
 }
 
-export default App
+// Agregar validación para 'children' en las props del componente
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired, // Valida que 'children' sea un nodo React
+};
 
+function App() {
+    return (
+        <AuthProvider>  {/* Envuelve toda la app con AuthProvider */}
+            <Routes>
+                <Route path="/" element={<Login />} />
+                <Route 
+                    path="/home" 
+                    element={
+                        <ProtectedRoute>
+                            <Home />  {/* Solo se renderiza si está autenticado */}
+                        </ProtectedRoute>
+                    } 
+                />
+            </Routes>
+        </AuthProvider>
+    );
+}
+
+export default App;
