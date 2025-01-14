@@ -4,6 +4,10 @@ import logo from './logo.png'
 import trash_icon from './trash.png'
 import search_icon from './search.png'
 import bowl_icon from './bowl.png'
+//import crosshair_icon from './crosshair.png'
+import add_icon_white from './add_icon_white.png'
+import add_icon_green from './add_icon_green.png'
+import remove_icon_red from './remove_icon_red.png'
 //menu
 import menu_1 from './promo_icon.png'
 import menu_2 from './sandwich_icon.png'
@@ -59,7 +63,11 @@ export const assets = {
     crosshair_icon,
     trash_icon,
     search_icon,
-    bowl_icon
+    bowl_icon,
+    crosshair_icon,
+    add_icon_white,
+    add_icon_green,
+    remove_icon_red
 }
 
 export const menu_list = [
