@@ -10,7 +10,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-image: url(src/img/2.jpg);
+    background-image: url(src/components/Login/img/2.jpg);
     background-size: cover;
 }
 
