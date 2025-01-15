@@ -12,6 +12,11 @@ const Dashboard = () => {
             <Link to="/admin/pedidos">
                 <button>Ver Pedidos</button>
             </Link>
+            {/* Enlace para ver los platos */}
+
+            <Link to="/admin/platos">
+                <button>Ver platos</button>
+            </Link>
         </div>
     );
 };

@@ -10,6 +10,8 @@ import Login from './pages/Login/Login';
 import LoginPage from './pages/admin/LoginPage'; // Importamos LoginPage
 import DashboardPage from './pages/Admin/DashboardPage';
 import Pedidos from './pages/Admin/Pedidos'
+import Platos from './pages/Admin/Platos'
+
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated } = React.useContext(AuthContext);
@@ -71,6 +73,14 @@ const App = () => {
                         element={
                             <ProtectedRoute>
                                 <Pedidos /> {/* Componente donde se muestran los pedidos */}
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/platos"
+                        element={
+                            <ProtectedRoute>
+                                <Platos /> {/* Componente donde se muestran los platos */}
                             </ProtectedRoute>
                         }
                     />

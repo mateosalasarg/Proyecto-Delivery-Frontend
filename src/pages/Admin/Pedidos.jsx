@@ -5,11 +5,15 @@ const Pedidos = () => {
     const [pedidos, setPedidos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [expandedPedidoId, setExpandedPedidoId] = useState(null); // Para manejar los pedidos expandibles
-    const [platosDetalles, setPlatosDetalles] = useState({}); // Para almacenar detalles de cada plato
+    const [expandedPedidoId, setExpandedPedidoId] = useState(null);
+    const [platosDetalles, setPlatosDetalles] = useState({});
+    const [platosToModify, setPlatosToModify] = useState([]); // Mantener platos a modificar
+    const [availablePlatos, setAvailablePlatos] = useState([]); // Platos disponibles
+    const [isModalOpen, setIsModalOpen] = useState(false); // Modal para agregar plato
+    const [selectedPlato, setSelectedPlato] = useState(null); // Plato seleccionado para agregar
 
     useEffect(() => {
-        // Hacer la solicitud a la API para obtener los pedidos
+        // Obtener los pedidos
         const fetchPedidos = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:5000/pedidos');
@@ -21,46 +25,118 @@ const Pedidos = () => {
             }
         };
 
+        // Obtener los platos disponibles
+        const fetchAvailablePlatos = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:5000/platos?disponible=1');  // Filtrar platos disponibles
+                setAvailablePlatos(response.data);
+            } catch (err) {
+                console.error('Error al cargar los platos disponibles', err);
+            }
+        };
+
         fetchPedidos();
+        fetchAvailablePlatos();
     }, []);
 
-    const fetchPlatoDetalles = async (id_plato) => {
-        // Solo hacer la llamada si aún no se han cargado los detalles del plato
-        if (!platosDetalles[id_plato]) {
-            try {
-                const response = await axios.get(`http://127.0.0.1:5000/platos/${id_plato}`);
-                setPlatosDetalles(prevState => ({
-                    ...prevState,
-                    [id_plato]: response.data
-                }));
-            } catch (err) {
-                console.error('Error al cargar los detalles del plato', err);
-            }
-        }
-    };
-
     const toggleDetalles = (id) => {
-        // Cambia el estado de expandir un pedido
-        setExpandedPedidoId(expandedPedidoId === id ? null : id);
+        if (expandedPedidoId !== id) {
+            setExpandedPedidoId(id);
+            // Cargar detalles de los platos para este pedido
+            const fetchPlatosDetalles = async () => {
+                try {
+                    const response = await axios.get('http://127.0.0.1:5000/platos');
+                    const detalles = response.data.reduce((acc, plato) => {
+                        acc[plato.id_plato] = plato;
+                        return acc;
+                    }, {});
+                    setPlatosDetalles(detalles);
+                } catch (err) {
+                    console.error('Error al cargar los detalles de los platos', err);
+                }
+            };
+            fetchPlatosDetalles();
+        } else {
+            setExpandedPedidoId(null);
+            setPlatosDetalles({});
+        }
     };
 
-    useEffect(() => {
-        // Si un pedido es expandido, cargar los detalles de los platos relacionados
-        if (expandedPedidoId) {
-            const pedido = pedidos.find(p => p.id_pedido === expandedPedidoId);
-            pedido.detalles.forEach(detalle => {
-                fetchPlatoDetalles(detalle.id_plato);
-            });
+    // Función para agregar un plato al pedido
+    const addPlatoToPedido = async (id_pedido) => {
+        if (!selectedPlato) {
+            alert('Por favor seleccione un plato');
+            return;
         }
-    }, [expandedPedidoId, pedidos]);
 
-    if (loading) {
-        return <div>Cargando pedidos...</div>;
-    }
+        try {
+            await axios.put(`http://127.0.0.1:5000/pedidos/${id_pedido}/modify-platos`, {
+                action: 'add',
+                platos: [{
+                    id_plato: selectedPlato.id_plato,
+                    cantidad: 1,  // Personalizar cantidad si es necesario
+                    comentario: 'Nuevo plato agregado'
+                }]
+            });
 
-    if (error) {
-        return <div>{error}</div>;
-    }
+            setPedidos(prevPedidos =>
+                prevPedidos.map(pedido =>
+                    pedido.id_pedido === id_pedido
+                        ? {
+                            ...pedido,
+                            detalles: [
+                                ...pedido.detalles,
+                                {
+                                    id_plato: selectedPlato.id_plato,
+                                    cantidad: 1,  // Personalizar cantidad si es necesario
+                                    comentario: 'Nuevo plato agregado'
+                                }
+                            ]
+                        }
+                        : pedido
+                )
+            );
+
+            setIsModalOpen(false);  // Cerrar modal después de agregar
+            setSelectedPlato(null);  // Limpiar selección
+            alert('Plato agregado con éxito');
+        } catch (err) {
+            console.error('Error al agregar el plato:', err);
+            alert('Error al agregar el plato');
+        }
+    };
+
+    // Función para eliminar platos del pedido
+    const removePlatoFromPedido = async (id_pedido, id_plato) => {
+        try {
+            await axios.put(`http://127.0.0.1:5000/pedidos/${id_pedido}/modify-platos`, {
+                action: 'remove',
+                platos: [{
+                    id_plato,
+                    cantidad: 1 // Puedes ajustar la cantidad si es necesario
+                }]
+            });
+
+            setPedidos(prevPedidos =>
+                prevPedidos.map(pedido =>
+                    pedido.id_pedido === id_pedido
+                        ? {
+                            ...pedido,
+                            detalles: pedido.detalles.filter(detalle => detalle.id_plato !== id_plato) // Eliminar el plato de los detalles
+                        }
+                        : pedido
+                )
+            );
+
+            alert('Plato eliminado con éxito');
+        } catch (err) {
+            console.error('Error al eliminar el plato:', err);
+            alert('Error al eliminar el plato');
+        }
+    };
+
+    if (loading) return <div>Cargando pedidos...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div>
@@ -89,8 +165,31 @@ const Pedidos = () => {
                                     <button onClick={() => toggleDetalles(pedido.id_pedido)}>
                                         {expandedPedidoId === pedido.id_pedido ? 'Ocultar detalles' : 'Ver detalles'}
                                     </button>
+                                    <button onClick={() => setIsModalOpen(true)}>Agregar Plato</button> {/* Botón para abrir modal */}
                                 </td>
                             </tr>
+
+                            {/* Modal para agregar plato */}
+                            {isModalOpen && (
+                                <div className="modal">
+                                    <div className="modal-content">
+                                        <h3>Seleccionar Plato para agregar</h3>
+                                        <select onChange={(e) => setSelectedPlato(JSON.parse(e.target.value))} value={selectedPlato ? JSON.stringify(selectedPlato) : ''}>
+                                            <option value="">Seleccionar Plato</option>
+                                            {availablePlatos.map(plato => (
+                                                <option key={plato.id_plato} value={JSON.stringify(plato)}>
+                                                    {plato.nombre} - ${plato.precio}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <br />
+                                        <button onClick={() => addPlatoToPedido(pedido.id_pedido)}>Agregar Plato</button>
+                                        <button onClick={() => setIsModalOpen(false)}>Cerrar</button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Detalles del Pedido */}
                             {expandedPedidoId === pedido.id_pedido && (
                                 <tr>
                                     <td colSpan="6">
@@ -103,34 +202,19 @@ const Pedidos = () => {
                                                     <th>Nombre del Plato</th>
                                                     <th>Precio</th>
                                                     <th>Disponible</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {pedido.detalles.map((detalle, index) => (
-                                                    <tr key={index}>
+                                                {pedido.detalles.map((detalle) => (
+                                                    <tr key={detalle.id_pedido_detalle}>
                                                         <td>{detalle.cantidad}</td>
                                                         <td>{detalle.comentario}</td>
+                                                        <td>{platosDetalles[detalle.id_plato] ? platosDetalles[detalle.id_plato].nombre : 'Cargando...'}</td>
+                                                        <td>{platosDetalles[detalle.id_plato] ? platosDetalles[detalle.id_plato].precio : 'Cargando...'}</td>
+                                                        <td>{platosDetalles[detalle.id_plato] ? (platosDetalles[detalle.id_plato].disponible === 1 ? 'Disponible' : 'No disponible') : 'Cargando...'}</td>
                                                         <td>
-                                                            {/* La información del plato se carga directamente */}
-                                                            {platosDetalles[detalle.id_plato] ? (
-                                                                platosDetalles[detalle.id_plato].nombre
-                                                            ) : (
-                                                                <span>Cargando...</span> // Indicador de carga
-                                                            )}
-                                                        </td>
-                                                        <td>
-                                                            {platosDetalles[detalle.id_plato] ? (
-                                                                platosDetalles[detalle.id_plato].precio
-                                                            ) : (
-                                                                <span>Cargando...</span> // Indicador de carga
-                                                            )}
-                                                        </td>
-                                                        <td>
-                                                            {platosDetalles[detalle.id_plato] ? (
-                                                                platosDetalles[detalle.id_plato].disponible === 1 ? 'Disponible' : 'No disponible'
-                                                            ) : (
-                                                                <span>Cargando...</span> // Indicador de carga
-                                                            )}
+                                                            <button onClick={() => removePlatoFromPedido(pedido.id_pedido, detalle.id_plato)}>Eliminar Plato</button>
                                                         </td>
                                                     </tr>
                                                 ))}
