@@ -7,7 +7,7 @@ const AuthContext = createContext();
 
 // Crea el proveedor de autenticación
 const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState();  // Añadimos el estado del usuario
     const navigate = useNavigate();
 
@@ -30,15 +30,13 @@ const AuthProvider = ({ children }) => {
         navigate('/home');
     };
 
-    // Función para cerrar sesión
     const logout = () => {
         setIsAuthenticated(false);
-        setUser(null);
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('user');  // Elimina los datos del cliente de localStorage
-        navigate('/');
+        setUser(null); // Elimina el usuario del estado
+        localStorage.removeItem('isAuthenticated'); // Elimina el estado de autenticación
+        localStorage.removeItem('user'); // Elimina los datos del cliente
+        navigate('/'); // Redirige al inicio de sesión
     };
-
     return (
         <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
             {children}
