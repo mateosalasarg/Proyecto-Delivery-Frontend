@@ -1,24 +1,88 @@
-import React from 'react'
-import { Routes} from 'react-router-dom'
-import {Route} from 'react-router-dom'
-import Nav from './components/Nav/Nav'
-import Home from './pages/Home/Home'
-import Cart from './pages/Cart/Cart'
-import Order from './pages/Order/Order'
-//import Header from './components/Header/Header'
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { AuthProvider, AuthContext } from './auth/AuthContext';
+import Nav from './components/Nav/Nav';
+import Home from './pages/Home/Home';
+import Cart from './pages/Cart/Cart';
+import Order from './pages/Order/Order';
+import Login from './pages/Login/Login';
+import LoginPage from './pages/admin/LoginPage'; // Importamos LoginPage
+import DashboardPage from './pages/Admin/DashboardPage';
+import Pedidos from './pages/Admin/Pedidos'
+// Componente para proteger rutas
+const ProtectedRoute = ({ children }) => {
+    const { isAuthenticated } = React.useContext(AuthContext);
+
+    if (!isAuthenticated) {
+        return <div>Acceso no autorizado. Por favor, inicia sesión.</div>;
+    }
+
+    return children;
+};
+
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired, // Valida que 'children' sea un nodo React
+};
 
 const App = () => {
-  return (
-    <div className='App'>
-      <Nav />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/order' element={<Order />} />
-      </Routes>
-    </div>
-  )
-}
+    return (
+        <AuthProvider>
+            <div className="App">
+                <Nav /> {/* Barra de navegación */}
+                <Routes>
+                    {/* Ruta para el login de administrador */}
+                    <Route path="/admin/login" element={<LoginPage />} /> 
+                    <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <DashboardPage /> {/* Asegúrate de que este componente esté definido */}
+                        </ProtectedRoute>
+                    }
+                />
+                    {/* Rutas protegidas para el usuario autenticado */}
+                    <Route
+                        path="/home"
+                        element={
+                            <ProtectedRoute>
+                                <Home />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/cart"
+                        element={
+                            <ProtectedRoute>
+                                <Cart />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/order"
+                        element={
+                            <ProtectedRoute>
+                                <Order />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/pedidos"
+                        element={
+                            <ProtectedRoute>
+                                <Pedidos /> {/* Componente donde se muestran los pedidos */}
+                            </ProtectedRoute>
+                        }
+                    />
 
-export default App
+                    {/* Ruta para el login general */}
+                    <Route path="/" element={<Login />} />
 
+
+                </Routes>
+            </div>
+        </AuthProvider>
+    );
+};
+
+export default App;
