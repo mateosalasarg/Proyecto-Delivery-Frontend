@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importamos useNavigate
 import './FoodItem.css';
 import PropTypes from 'prop-types';
-
-// Ruta a la imagen por defecto
-import defaultImage from '../../assets/default.png'; // Asegúrate de que la ruta sea correcta
+import defaultImage from '../../assets/default.png';
 
 const FoodItem = ({ id, name, price, description, image }) => {
   const [itemCount, setItemCount] = useState(0);
+  const navigate = useNavigate(); // Usamos el hook useNavigate
 
-  // Si no hay imagen, usar la imagen por defecto
   const imageSrc = image || defaultImage;
 
+  // Función para manejar el clic en el plato y navegar a la página de detalles
+  const handleClick = () => {
+    navigate(`/food-details/${id}`); // Redirige a la ruta de detalles del plato con el id
+  };
+
   return (
-    <div className='food-item'>
+    <div className='food-item' onClick={handleClick}> {/* Añadimos onClick para navegar */}
       <div className="food-item-img-container">
         <img className='food-item-image' src={imageSrc} alt={name} />
         {!itemCount 
