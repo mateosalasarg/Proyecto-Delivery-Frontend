@@ -7,11 +7,12 @@
 }
 
 body {
-  min-height: 200vh;
+  min-height: 100vh; /* Altura mínima igual al viewport */
   background-color: darkslategrey;
-  display: flex;  /* Asegura que el contenido se pueda centrar */
-  justify-content: center;  /* Centra el contenido horizontalmente */
-  align-items: center;  /* Centra el contenido verticalmente */
+  display: flex; /* Para centrar contenido */
+  justify-content: center; /* Centrado horizontal */
+  align-items: flex-start; /* Evita que los componentes queden en el centro vertical */
+  padding: 2rem 0; /* Espaciado opcional */
 }
 
 a {
@@ -29,6 +30,7 @@ a {
   width: 100%;
   padding: 2rem;
   text-align: center;
+  min-height: 90vh; /* Ocupa casi toda la altura de la pantalla */
 }
 
 /* Logo y animaciones */

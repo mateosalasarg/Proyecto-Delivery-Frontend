@@ -1,48 +1,103 @@
-.nav{
-    padding: 20px 0px;
+.nav {
+    padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color:darkslategrey; /* Fondo oscuro elegante */
+    color: white;
 }
 
-.nav .logo{
-    width: 80px;
+.logo {
+    width: 100px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
-.nav-links{
+.logo:hover {
+    transform: scale(1.1);
+}
+
+.nav-links {
     display: flex;
     list-style: none;
     gap: 20px;
-    color: white;
-    font-size: 18px;
 }
 
-.nav-right{
+.nav-links li {
+    cursor: pointer;
+    font-size: 18px;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-links li:hover {
+    color: #ffd700; /* Dorado para hover */
+}
+
+.nav-links li::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background-color: #ffd700;
+    bottom: -5px;
+    left: 0;
+    transition: width 0.3s ease;
+}
+
+.nav-links li:hover::after {
+    width: 100%;
+}
+
+.nav-right {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.nav li{
+.icon {
+    width: 30px;
+    height: auto;
     cursor: pointer;
+    transition: transform 0.3s ease;
 }
-/*configurar boton*/
-.nav button{
-    background-color: aliceblue;
+
+.icon:hover {
+    transform: scale(1.2);
+}
+
+.nav-button {
+    background-color: #f8f9fa;
     font-size: 16px;
-    color: black;
-    border: 1px solid aliceblue;
-    padding: 10px 30px;
+    color: #34403b;
+    border: 1px solid #f8f9fa;
+    padding: 10px 20px;
     border-radius: 50px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.nav button:hover{
-    background-color: thistle;
+.nav-button:hover {
+    background-color: #ffd700;
+    color: #343a40;
+    transform: translateY(-3px);
 }
 
-.nav img[src$=".png"] {
-    width: 30px; 
-    height: auto;
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 16px;
+}
+
+/* Indicador decorativo */
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ff4d4d;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -5px;
 }

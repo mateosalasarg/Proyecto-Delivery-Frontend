@@ -1,21 +1,75 @@
-.header-info{
+/* Contenedor principal del header */
+.header {
+    height: 30vw;
+    margin: 35px auto;
+    background-image: url('/sand.png'); /* Ruta de la imagen */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    border-radius: 15px; /* Bordes redondeados */
+    overflow: hidden; /* Asegura que no sobresalga contenido */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Sombra del contenedor */
+}
+
+/* Información dentro del header */
+.header-info {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    max-width: 50%;
-    top: 35%;
-    font-size: 15px;
+    justify-content: center;
+    gap: 15px;
+    max-width: 60%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
-    animation: fadeIn 1s;
+    animation: fadeIn 1.5s ease-in-out; /* Efecto de entrada */
 }
-.header-info h2{
+
+/* Estilo del título principal */
+.header-info h2 {
+    font-weight: 600;
+    color: white;
+    font-size: clamp(22px, 4vw, 50px); /* Responsivo */
+    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.9); /* Sombra más fuerte para visibilidad */
+    letter-spacing: 1px;
+}
+
+/* Estilo del párrafo */
+.header-info p {
+    color: white;
+    font-size: clamp(16px, 1.5vw, 24px); /* Responsivo */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.85); /* Mejora legibilidad */
     font-weight: 300;
-    color: white;
-    font-size: max(4.5vw,22px);
 }
-.header-info p{
-    color: white;
-    font-size: 1.5vw;
+
+/* Animación para el efecto de entrada */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .header-info {
+        max-width: 80%;
+    }
+
+    .header-info h2 {
+        font-size: 24px;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9); /* Ajuste para pantallas pequeñas */
+    }
+
+    .header-info p {
+        font-size: 14px;
+        text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.85); /* Ajuste para pantallas pequeñas */
+    }
 }
