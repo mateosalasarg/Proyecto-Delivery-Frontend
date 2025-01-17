@@ -50,7 +50,7 @@
 }
 
 .food-item-img-container .add{
-    width: 50px;
+    width: 40px;
     position: absolute;
     bottom: 15px;
     right: 15px;
@@ -67,5 +67,10 @@
     gap: 10px;
     padding: 6px;
     border-radius: 50px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: white;
+}
+
+.food-item-counter img{
+    width: 20px;
+    cursor: pointer;
 }
