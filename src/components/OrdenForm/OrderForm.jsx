@@ -21,7 +21,7 @@ const OrderForm = () => {
   useEffect(() => {
     const fetchFoodDetails = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/platos/${id}`); // Obtenemos los detalles del plato
+        const response = await fetch(`http://127.0.0.1:5000/platos/${id}`);
         const data = await response.json();
         setFoodDetails(data);
       } catch (error) {
@@ -31,39 +31,71 @@ const OrderForm = () => {
       }
     };
 
-    fetchFoodDetails(); // Cargar los detalles del plato
+    fetchFoodDetails();
   }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const orderData = {
-      id_cliente: user.id_cliente, // Usamos el id_cliente desde el contexto
-      domicilio_entrega: deliveryAddress,
-      platos: [
-        {
-          id_plato: parseInt(id), // Convertir a entero
-          cantidad: quantity,
-        },
-      ],
-      comentarios: comments || "", // Enviar los comentarios si hay, sino una cadena vacía
-    };
-
     try {
-      console.log(orderData);
+      // Obtener repartidores disponibles
+      const repartidorResponse = await fetch("http://127.0.0.1:5000/repartidores/disponibles");
+      const repartidores = await repartidorResponse.json();
 
+      // Verificar si hay repartidores disponibles
+      if (repartidores.length === 0) {
+        alert("Todos los repartidores están ocupados. Por favor, intente nuevamente en 5 minutos.");
+        return;
+      }
+
+      // Tomar el primer repartidor disponible
+      const repartidorAsignado = repartidores[0];
+
+      const orderData = {
+        id_cliente: user.id_cliente,
+        domicilio_entrega: deliveryAddress,
+        id_repartidor: repartidorAsignado.id_repartidor, // Asignar el ID del repartidor
+        platos: [
+          {
+            id_plato: parseInt(id), // Convertir a entero
+            cantidad: quantity,
+          },
+        ],
+        comentarios: comments || "", // Enviar los comentarios si hay, sino una cadena vacía
+      };
+
+      // Enviar pedido al backend
       const response = await fetch("http://127.0.0.1:5000/pedidos/crear", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(orderData), // Enviar los datos al backend
+        body: JSON.stringify(orderData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         alert("Pedido realizado con éxito!");
+
+        // Ahora actualizamos el estado del repartidor a "ocupado"
+        const updateResponse = await fetch(`http://127.0.0.1:5000/repartidores/${repartidorAsignado.id_repartidor}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            field: "disponible",
+            value: 2, // Cambiamos a "ocupado"
+          }),
+        });
+
+        if (updateResponse.ok) {
+          console.log("Repartidor actualizado correctamente.");
+        } else {
+          const updateData = await updateResponse.json();
+          console.error("Error al actualizar repartidor:", updateData.error);
+        }
       } else {
         alert("Error al realizar el pedido: " + data.error);
       }
@@ -83,7 +115,12 @@ const OrderForm = () => {
       <h3>{foodDetails.nombre}</h3>
       <p>{foodDetails.descripcion}</p>
       <p>Precio: ${foodDetails.precio}</p>
-      
+
+      {/* Imagen del plato */}
+      <div className="food-image-container">
+        <img src={foodDetails.imagen} alt={foodDetails.nombre} className="food-image" />
+      </div>
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="quantity">Cantidad:</label>

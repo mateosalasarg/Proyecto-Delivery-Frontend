@@ -87,4 +87,13 @@
   .order-form .form-group textarea {
     margin-top: 5px;
   }
+  .food-image-container {
+    text-align: center;
+    margin: 20px 0;
+  }
   
+  .food-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }

@@ -1,0 +1,103 @@
+/* Estilo para el contenedor del componente Platos */
+.platos-container h1 {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Lista de platos */
+.platos-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.platos-list li {
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* Estilo de los botones */
+.platos-buttons button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.platos-buttons button:hover {
+    background-color: #45a049;
+}
+
+.platos-buttons button:disabled {
+    background-color: #d3d3d3;
+    cursor: not-allowed;
+}
+
+/* Estilo del formulario de creación de platos */
+.platos-form input, 
+.platos-form select {
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+/* Estilo para los formularios */
+.platos-form div {
+    margin: 20px 0;
+}
+
+/* Estilo de los campos de entrada */
+.platos-form label {
+    font-weight: bold;
+}
+
+/* Estilo de las imágenes */
+.platos-list img {
+    margin-top: 10px;
+    max-width: 100px;
+}
+
+/* Modal de edición */
+.platos-edit-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.platos-edit-modal .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo para los select */
+.platos-form select {
+    margin-bottom: 15px;
+}
+
+/* Estilo para las opciones de categorías */
+.platos-form option {
+    font-size: 14px;
+}

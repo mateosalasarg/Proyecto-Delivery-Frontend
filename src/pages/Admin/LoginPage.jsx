@@ -16,7 +16,6 @@ const LoginPage = () => {
       });
       
       if (response.status === 200) {
-        // Aquí puedes guardar el token en localStorage o cookies si es necesario
         localStorage.setItem('adminToken', response.data.token);
         window.location.href = '/dashboard';  // Redirigir a la página de administrador
       }

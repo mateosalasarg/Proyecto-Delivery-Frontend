@@ -1,6 +1,4 @@
-
-
-
+/* Estilos generales para el contenedor */
 .container-form {
   display: flex;
   border-radius: 20px;
@@ -11,7 +9,8 @@
   margin: 10px;
 }
 
-.information {
+/* Estilos para la vista de información */
+.container-form .information {
   width: 40%;
   display: flex;
   align-items: center;
@@ -21,22 +20,23 @@
   border-bottom-left-radius: 20px;
 }
 
-.info-childs {
+/* Estilos para los hijos dentro de .information */
+.container-form .information .info-childs {
   width: 100%;
   padding: 0 30px;
 }
 
-.info-childs h2 {
+.container-form .information .info-childs h2 {
   font-size: 2.5rem;
   color: #333;
 }
 
-.info-childs p {
+.container-form .information .info-childs p {
   margin: 15px 0 ;
   color: #555;
 }
 
-.info-childs input {
+.container-form .information .info-childs input {
   background-color: transparent;
   outline: none;
   border: solid 2px #9191bd;
@@ -47,14 +47,15 @@
   transition: background-color .3s ease;
 }
 
-.info-childs input:hover {
+.container-form .information .info-childs input:hover {
   background-color: #9191bd;
   border: none;
   color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
 }
 
-.form-information {
+/* Estilos para la vista del formulario */
+.container-form .form-information {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,54 +66,28 @@
   border-bottom-right-radius: 20px;
 }
 
-.form-information-childs {
+.container-form .form-information .form-information-childs {
   padding: 0 30px;
 }
 
-.form-information-childs h2 {
+.container-form .form-information .form-information-childs h2 {
   color: #333;
   font-size: 2rem;
 }
 
-.form-information-childs p {
+.container-form .form-information .form-information-childs p {
   color: #555;
 }
 
-.icons {
-  margin: 15px 0;
+/* Estilos para los formularios dentro de Login y Register */
+.container-form .form-register,
+.container-form .form-login {
+  margin-top: 30px;
 }
 
-.icons i {
-  border-radius: 50%;
-  padding: 15px;
-  cursor: pointer;
-  margin: 0 10px;
-  color: #9191bd;
-  border: solid thin #9191bd;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-}
-
-.icons i:hover {
-  background-color: #c7c7f3;
-  color: #fff;
-}
-
-.form {
-  margin: 30px 0 0 0;
-}
-
-.form label {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  border-radius: 20px;
-  padding: 0 10px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-}
-
-.form label input {
+/* Estilos para los inputs del formulario */
+.container-form .form-register label input,
+.container-form .form-login label input {
   width: 100%;
   padding: 10px;
   background-color: #fff;
@@ -122,11 +97,9 @@
   color: #333;
 }
 
-.form label i {
-  color: #a7a7a7;
-}
-
-.form input[type="submit"] {
+/* Estilos para el botón de envío */
+.container-form .form-register input[type="submit"],
+.container-form .form-login input[type="submit"] {
   background-color: #9191bd;
   color: #fff;
   border-radius: 20px;
@@ -137,24 +110,12 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
 }
 
-.form input[type="submit"]:hover {
+.container-form .form-register input[type="submit"]:hover,
+.container-form .form-login input[type="submit"]:hover {
   background-color: #7a7a9a;
 }
 
-.hide {
-  position: absolute;
-  transform: translateY(-300%);
-}
-
-/*PERSONALIZACION DE MIS ALERTAS Y MENSAJES */
-.form div .alerta {
-  width: 290px;
-  text-align: left;
-  border-radius: 7px;
-  margin-bottom: 10px;
-  font-size: .8rem;
-}
-
+/* Escondemos alertas si no hay error o éxito */
 .form > .alerta-error,
 .form > .alerta-exito {
   display: none;
@@ -178,18 +139,32 @@
   font-size: .8rem;
 }
 
-.form .error {
-  outline: solid 2px #9d2222;
+/* Estilos específicos para la vista de Registro */
+.container-form.register .form-register {
+  display: block;
 }
 
+.container-form.register .form-login {
+  display: none;
+}
 
-@media screen and (max-width:750px) {
+/* Estilos específicos para la vista de Login */
+.container-form.login .form-login {
+  display: block;
+}
+
+.container-form.login .form-register {
+  display: none;
+}
+
+/* Ajustes para pantallas más pequeñas */
+@media screen and (max-width: 750px) {
   html {
     font-size: 12px;
   }
 }
 
-@media screen and (max-width:580px) {
+@media screen and (max-width: 580px) {
   html {
     font-size: 15px;
   }

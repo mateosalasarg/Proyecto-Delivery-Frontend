@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './StylesAdmin/Platos.css';
 
 const Platos = () => {
-    const [platos, setPlatos] = useState([]); // Almacena la lista de platos
-    const [loading, setLoading] = useState(false); // Para mostrar el estado de carga
-    const [error, setError] = useState(null); // Para manejar errores
-    const [newPlato, setNewPlato] = useState({ // Datos del nuevo plato
+    const [platos, setPlatos] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [newPlato, setNewPlato] = useState({
         nombre: '',
         descripcion: '',
         precio: '',
         disponible: 1,
         tipo_plato: 1,
-        imagen: '', // Para la URL de la imagen
+        imagen: '',
         categoria: ''
     });
-    const [showCreateForm, setShowCreateForm] = useState(false); // Para mostrar el formulario de creación
-    const [editPlato, setEditPlato] = useState(null); // Plato que se va a editar
-    const [field, setField] = useState(''); // Campo a actualizar
-    const [value, setValue] = useState(''); // Valor del campo a actualizar
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [editPlato, setEditPlato] = useState(null);
+    const [field, setField] = useState('');
+    const [value, setValue] = useState('');
 
     const categorias = [
         'Promociones',
@@ -30,7 +31,6 @@ const Platos = () => {
         'Bebidas'
     ];
 
-    // Función para obtener los platos desde la API
     const fetchPlatos = async () => {
         setLoading(true);
         setError(null);
@@ -44,19 +44,16 @@ const Platos = () => {
         }
     };
 
-    // Función para subir la imagen a Firebase Storage
     const uploadImage = async (file) => {
         const formData = new FormData();
         formData.append('image', file);
 
         try {
             const response = await axios.post('http://127.0.0.1:5000/imagen', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            const fileName = response.data.fileName; // Nombre del archivo devuelto por el backend
+            const fileName = response.data.fileName;
             const imageUrl = `https://firebasestorage.googleapis.com/v0/b/delivery-nono-7dc3c.firebasestorage.app/o/${encodeURIComponent(fileName)}?alt=media`;
             return imageUrl;
         } catch (err) {
@@ -66,7 +63,6 @@ const Platos = () => {
         }
     };
 
-    // Función para crear un nuevo plato
     const createPlato = async () => {
         const { nombre, descripcion, precio, disponible, tipo_plato, imagen, categoria } = newPlato;
 
@@ -76,34 +72,31 @@ const Platos = () => {
         }
 
         try {
-            // Si se sube una imagen, obtener la URL
             let uploadedImage = imagen;
             if (imagen instanceof File) {
                 uploadedImage = await uploadImage(imagen);
-                if (!uploadedImage) return; // Si falla la subida, no continuar
+                if (!uploadedImage) return;
             }
 
-            // Usamos la URL de la imagen obtenida (o la imagen si no es un archivo)
             const updatedPlato = {
                 ...newPlato,
                 precio: parseFloat(precio),
                 tipo_plato: parseInt(tipo_plato),
                 disponible: disponible === 1,
-                imagen: uploadedImage // Asignamos la URL de la imagen subida
+                imagen: uploadedImage
             };
-            console.log(updatedPlato)
+
             const response = await axios.post('http://127.0.0.1:5000/platos/crear', updatedPlato);
             alert(response.data.message);
-            setShowCreateForm(false); // Cerrar formulario después de crear
-            fetchPlatos(); // Refrescar la lista de platos
-            setNewPlato({ nombre: '', descripcion: '', precio: '', disponible: 1, tipo_plato: 1, imagen: '', categoria: '' }); // Limpiar formulario
+            setShowCreateForm(false);
+            fetchPlatos();
+            setNewPlato({ nombre: '', descripcion: '', precio: '', disponible: 1, tipo_plato: 1, imagen: '', categoria: '' });
         } catch (err) {
             console.error('Error al crear el plato:', err.response ? err.response.data : err.message);
             alert('Error al crear el plato');
         }
     };
 
-    // Función para actualizar un plato
     const updatePlato = async (id_plato) => {
         if (!field || !value) {
             alert('Por favor ingrese un campo y un valor');
@@ -112,8 +105,8 @@ const Platos = () => {
 
         try {
             await axios.put(`http://127.0.0.1:5000/platos/${id_plato}`, { field, value });
-            fetchPlatos(); // Refrescar la lista
-            setEditPlato(null); // Cerrar formulario de edición
+            fetchPlatos();
+            setEditPlato(null);
             alert('Plato actualizado con éxito');
         } catch (err) {
             console.error('Error al actualizar el plato:', err);
@@ -121,71 +114,68 @@ const Platos = () => {
         }
     };
 
-    // Llamada para cargar los platos al montar el componente
     useEffect(() => {
         fetchPlatos();
     }, []);
 
     return (
-        <div>
+        <div className="platos-container">
             <h1>Platos</h1>
             {loading && <p>Cargando platos...</p>}
             {error && <p>{error}</p>}
 
-            {/* Lista de platos */}
-            <ul>
-                {platos.map((plato) => (
-                    <li key={plato.id_plato}>
-                        <h3>{plato.nombre}</h3>
-                        <p>{plato.descripcion || 'Sin descripción'}</p>
-                        <p>Precio: ${plato.precio}</p>
-                        <p>{plato.disponible === 1 ? 'Disponible' : 'No disponible'}</p>
-                        <p>Categoría: {plato.categoria}</p>
-
-                        {/* Mostrar imagen del plato */}
-                        {plato.imagen && <img src={plato.imagen} alt={plato.nombre} width="100" />}
-
-                        <button onClick={() => setEditPlato(plato.id_plato)}>Editar</button>
-
-                        {/* Formulario de edición */}
-                        {editPlato === plato.id_plato && (
-                            <div>
-                                <h4>Editar Plato</h4>
-                                <label>
-                                    Campo:
-                                    <select onChange={(e) => setField(e.target.value)} value={field}>
-                                        <option value="">Seleccionar campo</option>
-                                        <option value="nombre">Nombre</option>
-                                        <option value="descripcion">Descripción</option>
-                                        <option value="precio">Precio</option>
-                                        <option value="disponible">Disponible</option>
-                                        <option value="tipo_plato">Tipo de Plato</option>
-                                        <option value="categoria">Categoría</option>
-                                    </select>
-                                </label>
-                                <br />
-                                <label>
-                                    Valor:
-                                    <input
-                                        type="text"
-                                        value={value}
-                                        onChange={(e) => setValue(e.target.value)}
-                                    />
-                                </label>
-                                <br />
-                                <button onClick={() => updatePlato(plato.id_plato)}>Actualizar Plato</button>
-                                <button onClick={() => setEditPlato(null)}>Cancelar</button>
+            <div className="platos-list">
+                <ul>
+                    {platos.map((plato) => (
+                        <li key={plato.id_plato}>
+                            <h3>{plato.nombre}</h3>
+                            <p>{plato.descripcion || 'Sin descripción'}</p>
+                            <p>Precio: ${plato.precio}</p>
+                            <p>{plato.disponible === 1 ? 'Disponible' : 'No disponible'}</p>
+                            <p>Categoría: {plato.categoria}</p>
+                            {plato.imagen && <img src={plato.imagen} alt={plato.nombre} width="100" />}
+                            <div className="platos-buttons">
+                                <button onClick={() => setEditPlato(plato.id_plato)}>Editar</button>
                             </div>
-                        )}
-                    </li>
-                ))}
-            </ul>
 
-            {/* Crear nuevo plato */}
-            <button onClick={() => setShowCreateForm(true)}>Crear Nuevo Plato</button>
+                            {editPlato === plato.id_plato && (
+                                <div className="platos-edit-modal">
+                                    <div className="modal-content">
+                                        <h4>Editar Plato</h4>
+                                        <label>
+                                            Campo:
+                                            <select onChange={(e) => setField(e.target.value)} value={field}>
+                                                <option value="">Seleccionar campo</option>
+                                                <option value="nombre">Nombre</option>
+                                                <option value="descripcion">Descripción</option>
+                                                <option value="precio">Precio</option>
+                                                <option value="disponible">Disponible</option>
+                                                <option value="tipo_plato">Tipo de Plato</option>
+                                                <option value="categoria">Categoría</option>
+                                            </select>
+                                        </label>
+                                        <br />
+                                        <label>
+                                            Valor:
+                                            <input type="text" value={value} onChange={(e) => setValue(e.target.value)} />
+                                        </label>
+                                        <br />
+                                        <button onClick={() => updatePlato(plato.id_plato)}>Actualizar Plato</button>
+                                        <button onClick={() => setEditPlato(null)}>Cancelar</button>
+                                    </div>
+                                </div>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            <div className="platos-buttons">
+                <button onClick={() => setShowCreateForm(true)}>Crear Nuevo Plato</button>
+            </div>
 
             {showCreateForm && (
-                <div>
+                <div className="platos-form">
                     <h4>Crear Nuevo Plato</h4>
                     <label>
                         Nombre:

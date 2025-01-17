@@ -12,7 +12,7 @@ const FoodItem = ({ id, name, price, description, image }) => {
 
   // Función para manejar el clic en el plato y navegar a la página de detalles
   const handleClick = () => {
-    navigate(`/food-details/${id}`); // Redirige a la ruta de detalles del plato con el id
+    navigate(`/order/${id}`); // Redirige a la ruta de detalles del plato con el id
   };
 
   return (
