@@ -1,0 +1,112 @@
+/* Estilo de la página de login */
+.login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+}
+
+/* Estilo de la tarjeta de administración */
+.admin-card {
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.admin-card__title {
+    margin-bottom: 10px;
+    font-size: 1.5em;
+}
+
+.admin-card__description {
+    font-size: 1.1em;
+    margin-bottom: 0;
+}
+
+/* Estilo del título principal */
+.login-page__title {
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+/* Estilo del formulario */
+.login-form {
+    background-color: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-form__group {
+    margin-bottom: 20px;
+}
+
+.login-form__label {
+    display: block;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.login-form__input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.login-form__input:focus {
+    border-color: #4CAF50;
+}
+
+/* Estilo del mensaje de error */
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+/* Estilo del botón de submit */
+.login-form__button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-form__button:hover {
+    background-color: #45a049;
+}
+
+/* Estilo para la responsividad */
+@media (max-width: 600px) {
+    .login-page {
+        padding: 20px;
+    }
+
+    .login-form {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .login-page__title {
+        font-size: 1.6em;
+    }
+}
