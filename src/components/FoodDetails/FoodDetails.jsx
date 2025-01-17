@@ -34,6 +34,12 @@ const FoodDetails = () => {
       <h2>{foodDetails.nombre}</h2>
       <p>{foodDetails.descripcion}</p>
       <p>Precio: ${foodDetails.precio}</p>
+      
+      {/* Mostrar imagen si existe */}
+      {foodDetails.imagen && (
+        <img src={foodDetails.imagen} alt={foodDetails.nombre} className="food-image" />
+      )}
+
       <button onClick={handleOrder}>Hacer Pedido</button> {/* Botón para hacer pedido */}
     </div>
   );
