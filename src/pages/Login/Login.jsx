@@ -4,6 +4,9 @@ import "./styles/style.css"; // Asegúrate de importar tus estilos
 
 const Login = () => {
   const [email, setEmail] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [domicilio, setDomicilio] = useState("");  // Nuevo campo domicilio
+  const [telefono, setTelefono] = useState("");   // Nuevo campo teléfono
   const [error, setError] = useState("");
   const [isRegistering, setIsRegistering] = useState(false); // Estado para alternar entre registro e inicio de sesión
   const { login } = useAuth(); // Usamos la función de login del contexto
@@ -37,10 +40,48 @@ const Login = () => {
     }
   };
 
-  const handleRegisterSubmit = (e) => {
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    alert("Formulario de registro enviado con éxito");
+  
+    // Verificamos que los campos esenciales estén completos
+    if (!nombre || !email || !domicilio) {
+      setError("El nombre, correo y domicilio son obligatorios.");
+      return;
+    }
+  
+    const newClient = {
+      nombre,
+      correo: email,  
+      domicilio,
+      telefono: telefono || "", // El teléfono es opcional
+    };
+  
+    try {
+      const response = await fetch("http://127.0.0.1:5000/clientes/crear", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newClient),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        if (data.message === "Cliente creado exitosamente") {
+          alert("Cliente registrado exitosamente");
+          setError(""); // Limpiar el mensaje de error
+          toggleForm(); // Cambiar a la vista de inicio de sesión
+        }
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || "Error al registrar el cliente.");
+      }
+    } catch (error) {
+      setError("Hubo un problema al realizar la solicitud.");
+      console.error("Error al hacer la solicitud:", error); // Ver detalles del error en la consola
+    }
   };
+  
 
   return (
     <div className={`container-form ${isRegistering ? "register" : "login"}`}>
@@ -60,12 +101,48 @@ const Login = () => {
               <form className="form form-register" onSubmit={handleRegisterSubmit}>
                 <div>
                   <label>
-                    <input type="text" placeholder="Nombre Completo" name="userName" required />
+                    <input
+                      type="text"
+                      placeholder="Nombre Completo"
+                      name="userName"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      required
+                    />
                   </label>
                 </div>
                 <div>
                   <label>
-                    <input type="email" placeholder="Correo Electrónico" name="userEmail" required />
+                    <input
+                      type="email"
+                      placeholder="Correo Electrónico"
+                      name="userEmail"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label>
+                    <input
+                      type="text"
+                      placeholder="Domicilio"
+                      name="domicilio"
+                      value={domicilio}
+                      onChange={(e) => setDomicilio(e.target.value)}
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label>
+                    <input
+                      type="text"
+                      placeholder="Teléfono (Opcional)"
+                      name="telefono"
+                      value={telefono}
+                      onChange={(e) => setTelefono(e.target.value)}
+                    />
                   </label>
                 </div>
                 <input type="submit" value="Registrarse" />
