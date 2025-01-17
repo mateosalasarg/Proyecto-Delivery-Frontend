@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { AuthProvider, AuthContext } from './auth/AuthContext';
 import Nav from './components/Nav/Nav';
@@ -30,13 +30,16 @@ ProtectedRoute.propTypes = {
 };
 
 const App = () => {
+    const location = useLocation(); // Obtener la ubicación actual
+
     return (
         <AuthProvider>
             <div className="App">
-                <Nav /> {/* Barra de navegación */}
+                {/* Renderizamos el Nav solo si no estamos en la página de login */}
+                {location.pathname !== '/' && <Nav />} 
                 <Routes>
                     {/* Ruta para el login de administrador */}
-                    <Route path="/admin/login" element={<LoginPage />} /> 
+                    <Route path="/admin/login" element={<LoginPage />} />
                     <Route
                     path="/dashboard"
                     element={
@@ -98,14 +101,12 @@ const App = () => {
                         path="/order/:id"
                         element={
                             <ProtectedRoute>
-                                <OrderForm  /> {/* Componente donde se muestran los platos */}
+                                <OrderForm /> {/* Componente donde se muestran los platos */}
                             </ProtectedRoute>
                         }
                     />
                     {/* Ruta para el login general */}
                     <Route path="/" element={<Login />} />
-
-
                 </Routes>
             </div>
         </AuthProvider>

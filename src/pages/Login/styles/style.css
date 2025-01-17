@@ -6,6 +6,8 @@
   height: 500px;
   max-width: 900px;
   transition: all 1s ease;
+  background-image: url('src/components/Login/img/2.jpg'); /* Ajusta la ruta de la imagen */
+
   margin: 10px;
 }
 
@@ -15,13 +17,14 @@
   display: flex;
   align-items: center;
   text-align: center;
-  background-color: #c7eef3;
   border-top-left-radius: 20px;
+  
   border-bottom-left-radius: 20px;
 }
 
 /* Estilos para los hijos dentro de .information */
 .container-form .information .info-childs {
+  
   width: 100%;
   padding: 0 30px;
 }
@@ -45,25 +48,27 @@
   color: #9191bd;
   cursor: pointer;
   transition: background-color .3s ease;
+  
 }
 
 .container-form .information .info-childs input:hover {
-  background-color: #9191bd;
   border: none;
   color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+  
 }
 
 /* Estilos para la vista del formulario */
 .container-form .form-information {
+  
   display: flex;
   align-items: center;
   justify-content: center;
   width: 60%;
   text-align: center;
-  background-color: #f8f8f8;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
+  
 }
 
 .container-form .form-information .form-information-childs {
