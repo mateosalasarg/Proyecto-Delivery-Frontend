@@ -178,7 +178,7 @@ const Pedidos = () => {
                                             <option value="">Seleccionar Plato</option>
                                             {availablePlatos.map(plato => (
                                                 <option key={plato.id_plato} value={JSON.stringify(plato)}>
-                                                    {plato.nombre} - ${plato.precio}
+                                                    {plato.nombre} - ${plato.precio} - {plato.disponible === 1 ? 'Disponible' : 'No disponible'}
                                                 </option>
                                             ))}
                                         </select>
