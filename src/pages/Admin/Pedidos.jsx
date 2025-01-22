@@ -29,6 +29,11 @@ const Pedidos = () => {
         };
 
         fetchPedidos();
+            // Configurar recarga automática cada 3 minutos (180,000 ms)
+    const interval = setInterval(fetchPedidos, 180000);
+
+    // Limpiar el intervalo al desmontar el componente
+    return () => clearInterval(interval);
     }, []);
 
     const loadRepartidor = async (pedidoId, idRepartidor) => {
@@ -177,6 +182,7 @@ const Pedidos = () => {
             alert('Por favor seleccione un campo y proporcione un valor.');
             return;
         }
+        console.log(updateField,updateValue)
 
         let valorFinal = updateValue;
         if (updateField === 'pagado') {
@@ -243,7 +249,8 @@ const Pedidos = () => {
 
                                 </td>
                                 <td>
-                                    {pedido.pagado === 1 ? 'Pagado' : 'No pagado'}
+                                {Number(pedido.pagado) === 1 ? "Pagado" : "No pagado"}
+                                    
                                 </td>
                             </tr>
                             {expandedPedidoId === pedido.id_pedido && (
