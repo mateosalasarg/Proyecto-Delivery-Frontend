@@ -28,17 +28,7 @@ const Pedidos = () => {
             }
         };
 
-        const fetchAvailablePlatos = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:5000/platos?disponible=1');
-                setAvailablePlatos(response.data);
-            } catch (err) {
-                console.error('Error al cargar los platos disponibles', err);
-            }
-        };
-
         fetchPedidos();
-        fetchAvailablePlatos();
     }, []);
 
     const loadRepartidor = async (pedidoId, idRepartidor) => {
@@ -49,8 +39,8 @@ const Pedidos = () => {
             }));
             return;
         }
-    
-        if (!repartidoresCargados[idRepartidor]) { // Cargar solo si no está en cache
+
+        if (!repartidoresCargados[idRepartidor]) {
             try {
                 const repartidorResponse = await axios.get(`http://127.0.0.1:5000/repartidores/${idRepartidor}`);
                 setRepartidoresCargados(prevState => ({
@@ -66,12 +56,12 @@ const Pedidos = () => {
             }
         }
     };
-    
-    const toggleDetalles = (id) => {
+
+    const toggleDetalles = async (id) => {
         if (expandedPedidoId !== id) {
             setExpandedPedidoId(id);
             const pedido = pedidos.find(pedido => pedido.id_pedido === id);
-    
+
             if (pedido) {
                 if (pedido.id_repartidor) {
                     loadRepartidor(id, pedido.id_repartidor);
@@ -82,8 +72,9 @@ const Pedidos = () => {
                     }));
                 }
             }
-    
-            const fetchPlatosDetalles = async () => {
+
+            // Cargar detalles de los platos solo si no están cargados
+            if (Object.keys(platosDetalles).length === 0) {
                 try {
                     const response = await axios.get('http://127.0.0.1:5000/platos');
                     const detalles = response.data.reduce((acc, plato) => {
@@ -94,15 +85,22 @@ const Pedidos = () => {
                 } catch (err) {
                     console.error('Error al cargar los detalles de los platos', err);
                 }
-            };
-    
-            fetchPlatosDetalles();
+            }
+
+            // Cargar platos disponibles solo si no están cargados
+            if (availablePlatos.length === 0) {
+                try {
+                    const response = await axios.get('http://127.0.0.1:5000/platos?disponible=1');
+                    setAvailablePlatos(response.data);
+                } catch (err) {
+                    console.error('Error al cargar los platos disponibles', err);
+                }
+            }
         } else {
             setExpandedPedidoId(null);
             setPlatosDetalles({});
         }
-    };
-    const addPlatoToPedido = async (id_pedido) => {
+    };    const addPlatoToPedido = async (id_pedido) => {
         if (!selectedPlato) {
             alert('Por favor seleccione un plato');
             return;
@@ -208,6 +206,7 @@ const Pedidos = () => {
         }
     };
 
+
     if (loading) return <div>Cargando pedidos...</div>;
     if (error) return <div>{error}</div>;
 
@@ -222,7 +221,6 @@ const Pedidos = () => {
                         <th>Estado</th>
                         <th>Comentario</th>
                         <th>Domicilio</th>
-                        <th>Repartidor</th> {/* Columna de repartidor */}
                         <th>Detalles</th>
                     </tr>
                 </thead>
@@ -240,6 +238,7 @@ const Pedidos = () => {
                                         {expandedPedidoId === pedido.id_pedido ? 'Ocultar detalles' : 'Ver detalles'}
                                     </button>
                                     <button onClick={() => setIsModalOpen(true)}>Agregar Plato</button>
+
                                 </td>
                             </tr>
                             {expandedPedidoId === pedido.id_pedido && (
@@ -256,6 +255,7 @@ const Pedidos = () => {
                                                     <th>Nombre del Plato</th>
                                                     <th>Precio</th>
                                                     <th>Acciones</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -272,7 +272,7 @@ const Pedidos = () => {
                                                 ))}
                                             </tbody>
                                         </table>
-
+                                        
                                         <h3>Actualizar Pedido</h3>
                                         <form
                                             onSubmit={(e) => {
@@ -322,7 +322,7 @@ const Pedidos = () => {
                     ))}
                 </tbody>
             </table>
-
+            
             {isModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
