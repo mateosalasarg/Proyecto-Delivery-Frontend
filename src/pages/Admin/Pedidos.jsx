@@ -222,6 +222,7 @@ const Pedidos = () => {
                         <th>Comentario</th>
                         <th>Domicilio</th>
                         <th>Detalles</th>
+                        <th>Pagado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -233,12 +234,16 @@ const Pedidos = () => {
                                 <td>{pedido.estado}</td>
                                 <td>{pedido.comentario}</td>
                                 <td>{pedido.domicilio_entrega}</td>
+
                                 <td>
                                     <button onClick={() => toggleDetalles(pedido.id_pedido)}>
                                         {expandedPedidoId === pedido.id_pedido ? 'Ocultar detalles' : 'Ver detalles'}
                                     </button>
                                     <button onClick={() => setIsModalOpen(true)}>Agregar Plato</button>
 
+                                </td>
+                                <td>
+                                    {pedido.pagado === 1 ? 'Pagado' : 'No pagado'}
                                 </td>
                             </tr>
                             {expandedPedidoId === pedido.id_pedido && (
