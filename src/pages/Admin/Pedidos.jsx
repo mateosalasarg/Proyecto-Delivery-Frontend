@@ -13,27 +13,13 @@ const Pedidos = () => {
     const [selectedPlato, setSelectedPlato] = useState(null);
     const [updateField, setUpdateField] = useState('');
     const [updateValue, setUpdateValue] = useState('');
+    const [repartidoresCargados, setRepartidoresCargados] = useState({});
 
     useEffect(() => {
         const fetchPedidos = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:5000/pedidos');
-                const pedidosConRepartidor = await Promise.all(
-                    response.data.map(async (pedido) => {
-                        if (pedido.id_repartidor) {
-                            try {
-                                const response = await axios.get(`http://127.0.0.1:5000/repartidores/${pedido.id_repartidor}`);
-                                return { ...pedido, repartidorNombre: response.data?.nombre || 'Desconocido' };
-                            } catch (err) {
-                                console.error(`Error obteniendo repartidor para id: ${pedido.id_repartidor}`, err);
-                                return { ...pedido, repartidorNombre: 'Error cargando' };
-                            }
-                            
-                        }
-                        return pedido;
-                    })
-                );
-                setPedidos(pedidosConRepartidor);
+                setPedidos(response.data);
             } catch (err) {
                 setError('Error al cargar los pedidos');
                 console.error(err);
@@ -55,9 +41,48 @@ const Pedidos = () => {
         fetchAvailablePlatos();
     }, []);
 
+    const loadRepartidor = async (pedidoId, idRepartidor) => {
+        if (!idRepartidor) {
+            setRepartidoresCargados(prevState => ({
+                ...prevState,
+                [idRepartidor]: 'No asignado',
+            }));
+            return;
+        }
+    
+        if (!repartidoresCargados[idRepartidor]) { // Cargar solo si no está en cache
+            try {
+                const repartidorResponse = await axios.get(`http://127.0.0.1:5000/repartidores/${idRepartidor}`);
+                setRepartidoresCargados(prevState => ({
+                    ...prevState,
+                    [idRepartidor]: repartidorResponse.data?.nombre || 'Desconocido',
+                }));
+            } catch (err) {
+                console.error(`Error al cargar el repartidor para el pedido con ID ${pedidoId}`, err);
+                setRepartidoresCargados(prevState => ({
+                    ...prevState,
+                    [idRepartidor]: 'Error al cargar',
+                }));
+            }
+        }
+    };
+    
     const toggleDetalles = (id) => {
         if (expandedPedidoId !== id) {
             setExpandedPedidoId(id);
+            const pedido = pedidos.find(pedido => pedido.id_pedido === id);
+    
+            if (pedido) {
+                if (pedido.id_repartidor) {
+                    loadRepartidor(id, pedido.id_repartidor);
+                } else {
+                    setRepartidoresCargados(prevState => ({
+                        ...prevState,
+                        [pedido.id_repartidor]: 'No asignado',
+                    }));
+                }
+            }
+    
             const fetchPlatosDetalles = async () => {
                 try {
                     const response = await axios.get('http://127.0.0.1:5000/platos');
@@ -70,13 +95,13 @@ const Pedidos = () => {
                     console.error('Error al cargar los detalles de los platos', err);
                 }
             };
+    
             fetchPlatosDetalles();
         } else {
             setExpandedPedidoId(null);
             setPlatosDetalles({});
         }
     };
-
     const addPlatoToPedido = async (id_pedido) => {
         if (!selectedPlato) {
             alert('Por favor seleccione un plato');
@@ -210,7 +235,6 @@ const Pedidos = () => {
                                 <td>{pedido.estado}</td>
                                 <td>{pedido.comentario}</td>
                                 <td>{pedido.domicilio_entrega}</td>
-                                <td>{pedido.repartidorNombre}</td> {/* Mostrar nombre del repartidor */}
                                 <td>
                                     <button onClick={() => toggleDetalles(pedido.id_pedido)}>
                                         {expandedPedidoId === pedido.id_pedido ? 'Ocultar detalles' : 'Ver detalles'}
@@ -222,6 +246,8 @@ const Pedidos = () => {
                                 <tr>
                                     <td colSpan="7">
                                         <h3>Detalles del Pedido:</h3>
+                                        <p>Repartidor: {repartidoresCargados[pedido.id_repartidor] || 'Cargando...'}</p>
+
                                         <table>
                                             <thead>
                                                 <tr>
