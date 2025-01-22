@@ -13,6 +13,8 @@ const Pedidos = () => {
     const [selectedPlato, setSelectedPlato] = useState(null);
     const [updateField, setUpdateField] = useState('');
     const [updateValue, setUpdateValue] = useState('');
+    const [repartidores, setRepartidores] = useState([]);
+
     const [repartidoresCargados, setRepartidoresCargados] = useState({});
 
     useEffect(() => {
@@ -27,8 +29,17 @@ const Pedidos = () => {
                 setLoading(false);
             }
         };
-
+        const fetchRepartidores = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:5000/repartidores/disponibles');
+                setRepartidores(response.data);
+            } catch (err) {
+                console.error('Error al cargar los repartidores', err);
+            }
+        };
         fetchPedidos();
+        fetchRepartidores();
+
             // Configurar recarga automática cada 3 minutos (180,000 ms)
     const interval = setInterval(fetchPedidos, 180000);
 
@@ -301,18 +312,31 @@ const Pedidos = () => {
                                                 <option value="">Seleccionar campo</option>
                                                 <option value="estado">Estado</option>
                                                 <option value="comentario">Comentario</option>
-                                                <option value="id_repartidor">ID Repartidor</option>
+                                                <option value="id_repartidor">Repartidor</option>
                                                 <option value="pagado">Pagado</option>
                                             </select>
 
                                             <label htmlFor={`value-${pedido.id_pedido}`}>Nuevo Valor:</label>
-                                            {updateField === 'pagado' ? (
+                                            {updateField === 'id_repartidor' ? (
                                                 <select
                                                     id={`value-${pedido.id_pedido}`}
                                                     value={updateValue}
                                                     onChange={(e) => setUpdateValue(e.target.value)}
                                                 >
-                                                    <option >...</option>
+                                                    <option value="">Seleccionar repartidor</option>
+                                                    {repartidores.map((repartidor) => (
+                                                        <option key={repartidor.id_repartidor} value={repartidor.id_repartidor}>
+                                                            {repartidor.nombre}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            ) : updateField === 'pagado' ? (
+                                                <select
+                                                    id={`value-${pedido.id_pedido}`}
+                                                    value={updateValue}
+                                                    onChange={(e) => setUpdateValue(e.target.value)}
+                                                >
+                                                    <option value="">...</option>
                                                     <option value="Pagado">Pagado</option>
                                                     <option value="No pagado">No pagado</option>
                                                 </select>
