@@ -1,49 +1,96 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import "./StylesAdmin/Pedido.css"
+import "./StylesAdmin/Pedido.css";
+
 const Pedidos = () => {
     const [pedidos, setPedidos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [expandedPedidoId, setExpandedPedidoId] = useState(null);
     const [platosDetalles, setPlatosDetalles] = useState({});
-    const [platosToModify, setPlatosToModify] = useState([]); // Mantener platos a modificar
-    const [availablePlatos, setAvailablePlatos] = useState([]); // Platos disponibles
-    const [isModalOpen, setIsModalOpen] = useState(false); // Modal para agregar plato
-    const [selectedPlato, setSelectedPlato] = useState(null); // Plato seleccionado para agregar
+    const [availablePlatos, setAvailablePlatos] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedPlato, setSelectedPlato] = useState(null);
+    const [updateField, setUpdateField] = useState('');
+    const [updateValue, setUpdateValue] = useState('');
+    const [repartidores, setRepartidores] = useState([]);
+
+    const [repartidoresCargados, setRepartidoresCargados] = useState({});
 
     useEffect(() => {
-        // Obtener los pedidos
         const fetchPedidos = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:5000/pedidos');
                 setPedidos(response.data);
-                setLoading(false);
             } catch (err) {
                 setError('Error al cargar los pedidos');
+                console.error(err);
+            } finally {
                 setLoading(false);
             }
         };
-
-        // Obtener los platos disponibles
-        const fetchAvailablePlatos = async () => {
+        const fetchRepartidores = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:5000/platos?disponible=1');  // Filtrar platos disponibles
-                setAvailablePlatos(response.data);
+                const response = await axios.get('http://127.0.0.1:5000/repartidores/disponibles');
+                setRepartidores(response.data);
             } catch (err) {
-                console.error('Error al cargar los platos disponibles', err);
+                console.error('Error al cargar los repartidores', err);
             }
         };
-
         fetchPedidos();
-        fetchAvailablePlatos();
+        fetchRepartidores();
+
+            // Configurar recarga automática cada 3 minutos (180,000 ms)
+    const interval = setInterval(fetchPedidos, 180000);
+
+    // Limpiar el intervalo al desmontar el componente
+    return () => clearInterval(interval);
     }, []);
 
-    const toggleDetalles = (id) => {
+    const loadRepartidor = async (pedidoId, idRepartidor) => {
+        if (!idRepartidor) {
+            setRepartidoresCargados(prevState => ({
+                ...prevState,
+                [idRepartidor]: 'No asignado',
+            }));
+            return;
+        }
+
+        if (!repartidoresCargados[idRepartidor]) {
+            try {
+                const repartidorResponse = await axios.get(`http://127.0.0.1:5000/repartidores/${idRepartidor}`);
+                setRepartidoresCargados(prevState => ({
+                    ...prevState,
+                    [idRepartidor]: repartidorResponse.data?.nombre || 'Desconocido',
+                }));
+            } catch (err) {
+                console.error(`Error al cargar el repartidor para el pedido con ID ${pedidoId}`, err);
+                setRepartidoresCargados(prevState => ({
+                    ...prevState,
+                    [idRepartidor]: 'Error al cargar',
+                }));
+            }
+        }
+    };
+
+    const toggleDetalles = async (id) => {
         if (expandedPedidoId !== id) {
             setExpandedPedidoId(id);
-            // Cargar detalles de los platos para este pedido
-            const fetchPlatosDetalles = async () => {
+            const pedido = pedidos.find(pedido => pedido.id_pedido === id);
+
+            if (pedido) {
+                if (pedido.id_repartidor) {
+                    loadRepartidor(id, pedido.id_repartidor);
+                } else {
+                    setRepartidoresCargados(prevState => ({
+                        ...prevState,
+                        [pedido.id_repartidor]: 'No asignado',
+                    }));
+                }
+            }
+
+            // Cargar detalles de los platos solo si no están cargados
+            if (Object.keys(platosDetalles).length === 0) {
                 try {
                     const response = await axios.get('http://127.0.0.1:5000/platos');
                     const detalles = response.data.reduce((acc, plato) => {
@@ -54,41 +101,48 @@ const Pedidos = () => {
                 } catch (err) {
                     console.error('Error al cargar los detalles de los platos', err);
                 }
-            };
-            fetchPlatosDetalles();
+            }
+
+            // Cargar platos disponibles solo si no están cargados
+            if (availablePlatos.length === 0) {
+                try {
+                    const response = await axios.get('http://127.0.0.1:5000/platos?disponible=1');
+                    setAvailablePlatos(response.data);
+                } catch (err) {
+                    console.error('Error al cargar los platos disponibles', err);
+                }
+            }
         } else {
             setExpandedPedidoId(null);
             setPlatosDetalles({});
         }
-    };
-
-    // Función para agregar un plato al pedido
-    const addPlatoToPedido = async (id_pedido) => {
+    };    const addPlatoToPedido = async (id_pedido) => {
         if (!selectedPlato) {
             alert('Por favor seleccione un plato');
             return;
         }
 
         try {
-            await axios.put(`http://127.0.0.1:5000/pedidos/${id_pedido}/modify-platos`, {
+            const pedidoId = typeof id_pedido === 'object' ? id_pedido.id : id_pedido;
+            await axios.put(`http://127.0.0.1:5000/pedidos/${pedidoId}/modify-platos`, {
                 action: 'add',
                 platos: [{
                     id_plato: selectedPlato.id_plato,
-                    cantidad: 1,  // Personalizar cantidad si es necesario
+                    cantidad: 1,
                     comentario: 'Nuevo plato agregado'
                 }]
             });
 
             setPedidos(prevPedidos =>
                 prevPedidos.map(pedido =>
-                    pedido.id_pedido === id_pedido
+                    pedido.id_pedido === pedidoId
                         ? {
                             ...pedido,
                             detalles: [
                                 ...pedido.detalles,
                                 {
                                     id_plato: selectedPlato.id_plato,
-                                    cantidad: 1,  // Personalizar cantidad si es necesario
+                                    cantidad: 1,
                                     comentario: 'Nuevo plato agregado'
                                 }
                             ]
@@ -97,8 +151,8 @@ const Pedidos = () => {
                 )
             );
 
-            setIsModalOpen(false);  // Cerrar modal después de agregar
-            setSelectedPlato(null);  // Limpiar selección
+            setIsModalOpen(false);
+            setSelectedPlato(null);
             alert('Plato agregado con éxito');
         } catch (err) {
             console.error('Error al agregar el plato:', err);
@@ -106,14 +160,13 @@ const Pedidos = () => {
         }
     };
 
-    // Función para eliminar platos del pedido
     const removePlatoFromPedido = async (id_pedido, id_plato) => {
         try {
             await axios.put(`http://127.0.0.1:5000/pedidos/${id_pedido}/modify-platos`, {
                 action: 'remove',
                 platos: [{
                     id_plato,
-                    cantidad: 1 // Puedes ajustar la cantidad si es necesario
+                    cantidad: 1
                 }]
             });
 
@@ -122,7 +175,7 @@ const Pedidos = () => {
                     pedido.id_pedido === id_pedido
                         ? {
                             ...pedido,
-                            detalles: pedido.detalles.filter(detalle => detalle.id_plato !== id_plato) // Eliminar el plato de los detalles
+                            detalles: pedido.detalles.filter(detalle => detalle.id_plato !== id_plato)
                         }
                         : pedido
                 )
@@ -134,6 +187,42 @@ const Pedidos = () => {
             alert('Error al eliminar el plato');
         }
     };
+
+    const updatePedido = async (id_pedido) => {
+        if (!updateField || !updateValue) {
+            alert('Por favor seleccione un campo y proporcione un valor.');
+            return;
+        }
+        console.log(updateField,updateValue)
+
+        let valorFinal = updateValue;
+        if (updateField === 'pagado') {
+            valorFinal = updateValue === 'Pagado' ? 1 : 2;
+        }
+
+        try {
+            await axios.put(`http://127.0.0.1:5000/pedidos/${id_pedido}`, {
+                field: updateField,
+                value: valorFinal,
+            });
+
+            setPedidos((prevPedidos) =>
+                prevPedidos.map((pedido) =>
+                    pedido.id_pedido === id_pedido
+                        ? { ...pedido, [updateField]: valorFinal }
+                        : pedido
+                )
+            );
+
+            alert('Pedido actualizado con éxito.');
+            setUpdateField('');
+            setUpdateValue('');
+        } catch (err) {
+            console.error('Error al actualizar el pedido:', err);
+            alert('Error al actualizar el pedido.');
+        }
+    };
+
 
     if (loading) return <div>Cargando pedidos...</div>;
     if (error) return <div>{error}</div>;
@@ -150,6 +239,7 @@ const Pedidos = () => {
                         <th>Comentario</th>
                         <th>Domicilio</th>
                         <th>Detalles</th>
+                        <th>Pagado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,39 +251,25 @@ const Pedidos = () => {
                                 <td>{pedido.estado}</td>
                                 <td>{pedido.comentario}</td>
                                 <td>{pedido.domicilio_entrega}</td>
+
                                 <td>
                                     <button onClick={() => toggleDetalles(pedido.id_pedido)}>
                                         {expandedPedidoId === pedido.id_pedido ? 'Ocultar detalles' : 'Ver detalles'}
                                     </button>
-                                    <button onClick={() => setIsModalOpen(true)}>Agregar Plato</button> {/* Botón para abrir modal */}
+                                    <button onClick={() => setIsModalOpen(true)}>Agregar Plato</button>
+
+                                </td>
+                                <td>
+                                {Number(pedido.pagado) === 1 ? "Pagado" : "No pagado"}
+                                    
                                 </td>
                             </tr>
-
-                            {/* Modal para agregar plato */}
-                            {isModalOpen && (
-                                <div className="modal">
-                                    <div className="modal-content">
-                                        <h3>Seleccionar Plato para agregar</h3>
-                                        <select onChange={(e) => setSelectedPlato(JSON.parse(e.target.value))} value={selectedPlato ? JSON.stringify(selectedPlato) : ''}>
-                                            <option value="">Seleccionar Plato</option>
-                                            {availablePlatos.map(plato => (
-                                                <option key={plato.id_plato} value={JSON.stringify(plato)}>
-                                                    {plato.nombre} - ${plato.precio} - {plato.disponible === 1 ? 'Disponible' : 'No disponible'}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <br />
-                                        <button onClick={() => addPlatoToPedido(pedido.id_pedido)}>Agregar Plato</button>
-                                        <button onClick={() => setIsModalOpen(false)}>Cerrar</button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Detalles del Pedido */}
                             {expandedPedidoId === pedido.id_pedido && (
                                 <tr>
-                                    <td colSpan="6">
+                                    <td colSpan="7">
                                         <h3>Detalles del Pedido:</h3>
+                                        <p>Repartidor: {repartidoresCargados[pedido.id_repartidor] || 'Cargando...'}</p>
+
                                         <table>
                                             <thead>
                                                 <tr>
@@ -201,8 +277,8 @@ const Pedidos = () => {
                                                     <th>Comentario</th>
                                                     <th>Nombre del Plato</th>
                                                     <th>Precio</th>
-                                                    <th>Disponible</th>
                                                     <th>Acciones</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -210,9 +286,8 @@ const Pedidos = () => {
                                                     <tr key={detalle.id_pedido_detalle}>
                                                         <td>{detalle.cantidad}</td>
                                                         <td>{detalle.comentario}</td>
-                                                        <td>{platosDetalles[detalle.id_plato] ? platosDetalles[detalle.id_plato].nombre : 'Cargando...'}</td>
-                                                        <td>{platosDetalles[detalle.id_plato] ? platosDetalles[detalle.id_plato].precio : 'Cargando...'}</td>
-                                                        <td>{platosDetalles[detalle.id_plato] ? (platosDetalles[detalle.id_plato].disponible === 1 ? 'Disponible' : 'No disponible') : 'Cargando...'}</td>
+                                                        <td>{platosDetalles[detalle.id_plato]?.nombre || 'Cargando...'}</td>
+                                                        <td>{platosDetalles[detalle.id_plato]?.precio || 'Cargando...'}</td>
                                                         <td>
                                                             <button onClick={() => removePlatoFromPedido(pedido.id_pedido, detalle.id_plato)}>Eliminar Plato</button>
                                                         </td>
@@ -220,6 +295,62 @@ const Pedidos = () => {
                                                 ))}
                                             </tbody>
                                         </table>
+                                        
+                                        <h3>Actualizar Pedido</h3>
+                                        <form
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                updatePedido(pedido.id_pedido);
+                                            }}
+                                        >
+                                            <label htmlFor={`field-${pedido.id_pedido}`}>Campo:</label>
+                                            <select
+                                                id={`field-${pedido.id_pedido}`}
+                                                value={updateField}
+                                                onChange={(e) => setUpdateField(e.target.value)}
+                                            >
+                                                <option value="">Seleccionar campo</option>
+                                                <option value="estado">Estado</option>
+                                                <option value="comentario">Comentario</option>
+                                                <option value="id_repartidor">Repartidor</option>
+                                                <option value="pagado">Pagado</option>
+                                            </select>
+
+                                            <label htmlFor={`value-${pedido.id_pedido}`}>Nuevo Valor:</label>
+                                            {updateField === 'id_repartidor' ? (
+                                                <select
+                                                    id={`value-${pedido.id_pedido}`}
+                                                    value={updateValue}
+                                                    onChange={(e) => setUpdateValue(e.target.value)}
+                                                >
+                                                    <option value="">Seleccionar repartidor</option>
+                                                    {repartidores.map((repartidor) => (
+                                                        <option key={repartidor.id_repartidor} value={repartidor.id_repartidor}>
+                                                            {repartidor.nombre}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            ) : updateField === 'pagado' ? (
+                                                <select
+                                                    id={`value-${pedido.id_pedido}`}
+                                                    value={updateValue}
+                                                    onChange={(e) => setUpdateValue(e.target.value)}
+                                                >
+                                                    <option value="">...</option>
+                                                    <option value="Pagado">Pagado</option>
+                                                    <option value="No pagado">No pagado</option>
+                                                </select>
+                                            ) : (
+                                                <input
+                                                    id={`value-${pedido.id_pedido}`}
+                                                    type="text"
+                                                    value={updateValue}
+                                                    onChange={(e) => setUpdateValue(e.target.value)}
+                                                />
+                                            )}
+
+                                            <button type="submit">Actualizar</button>
+                                        </form>
                                     </td>
                                 </tr>
                             )}
@@ -227,6 +358,25 @@ const Pedidos = () => {
                     ))}
                 </tbody>
             </table>
+            
+            {isModalOpen && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Seleccionar Plato para agregar</h3>
+                        <select onChange={(e) => setSelectedPlato(JSON.parse(e.target.value))} value={selectedPlato ? JSON.stringify(selectedPlato) : ''}>
+                            <option value="">Seleccionar Plato</option>
+                            {availablePlatos.map(plato => (
+                                <option key={plato.id_plato} value={JSON.stringify(plato)}>
+                                    {plato.nombre} - ${plato.precio} - {plato.disponible === 1 ? 'Disponible' : 'No disponible'}
+                                </option>
+                            ))}
+                        </select>
+                        <br />
+                        <button onClick={() => addPlatoToPedido(expandedPedidoId)}>Agregar Plato</button>
+                        <button onClick={() => setIsModalOpen(false)}>Cerrar</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
