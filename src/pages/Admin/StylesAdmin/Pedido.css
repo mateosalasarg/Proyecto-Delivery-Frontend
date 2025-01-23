@@ -140,3 +140,103 @@ button.toggle-details:hover {
     margin: 0;
     font-size: 14px;
 }
+/* Tabla */
+table tr:hover {
+    background-color: #444; /* Fondo gris oscuro */
+}
+
+/* Filas expandidas */
+tr.expanded {
+    background-color: #555; /* Fondo diferenciado */
+    border-left: 4px solid #4CAF50; /* Borde lateral verde */
+}
+
+/* Botones de acción */
+button.add-plato {
+    background-color: #4CAF50; /* Verde */
+}
+
+button.add-plato:hover {
+    background-color: #45a049;
+}
+
+button.remove-plato {
+    background-color: #E74C3C; /* Rojo */
+}
+
+button.remove-plato:hover {
+    background-color: #C0392B;
+}
+/* Estilo del formulario de actualizar pedido */
+form {
+    background-color: #444; /* Fondo oscuro */
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Arial', sans-serif;
+    color: white; /* Texto blanco */
+}
+
+/* Etiquetas del formulario */
+form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+/* Campos de entrada y select */
+form input, form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    color: black; /* Texto negro */
+    background-color: #fff; /* Fondo blanco */
+    box-sizing: border-box;
+}
+
+/* Botón de actualizar */
+form button[type="submit"] {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+form button[type="submit"]:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+/* Botón de limpiar */
+form button[type="reset"] {
+    background-color: #f44336; /* Rojo */
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+form button[type="reset"]:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+
+/* Alinear botones en una fila */
+form .form-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+}
