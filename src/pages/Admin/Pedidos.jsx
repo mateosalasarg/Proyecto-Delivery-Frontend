@@ -9,13 +9,15 @@ const Pedidos = () => {
     const [expandedPedidoId, setExpandedPedidoId] = useState(null);
     const [platosDetalles, setPlatosDetalles] = useState({});
     const [availablePlatos, setAvailablePlatos] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAgregarPlatoModalOpen, setIsAgregarPlatoModalOpen] = useState(false);
     const [selectedPlato, setSelectedPlato] = useState(null);
     const [updateField, setUpdateField] = useState('');
     const [updateValue, setUpdateValue] = useState('');
     const [repartidores, setRepartidores] = useState([]);
-
     const [repartidoresCargados, setRepartidoresCargados] = useState({});
+    const [isClienteModalOpen, setIsClienteModalOpen] = useState(false);
+    const [selectedCliente, setSelectedCliente] = useState(null);
+
 
     useEffect(() => {
         const fetchPedidos = async () => {
@@ -41,12 +43,11 @@ const Pedidos = () => {
         fetchRepartidores();
 
             // Configurar recarga automática cada 3 minutos (180,000 ms)
-    const interval = setInterval(fetchPedidos, 180000);
+            const interval = setInterval(fetchPedidos, 180000);    
+            // Limpiar el intervalo al desmontar el componente
 
-    // Limpiar el intervalo al desmontar el componente
-    return () => clearInterval(interval);
+        return () => clearInterval(interval);
     }, []);
-
     const loadRepartidor = async (pedidoId, idRepartidor) => {
         if (!idRepartidor) {
             setRepartidoresCargados(prevState => ({
@@ -151,7 +152,7 @@ const Pedidos = () => {
                 )
             );
 
-            setIsModalOpen(false);
+            setIsAgregarPlatoModalOpen(false);
             setSelectedPlato(null);
             alert('Plato agregado con éxito');
         } catch (err) {
@@ -224,8 +225,22 @@ const Pedidos = () => {
     };
 
 
+
+    const fetchClienteInfo = async (id_cliente) => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:5000/clientes/${id_cliente}`);
+            console.log(response.data)
+            setSelectedCliente(response.data);
+            setIsClienteModalOpen(true);
+        } catch (err) {
+            console.error(`Error al cargar la información del cliente con ID ${id_cliente}`, err);
+            alert('No se pudo cargar la información del cliente.');
+        }
+    };
+
     if (loading) return <div>Cargando pedidos...</div>;
     if (error) return <div>{error}</div>;
+
 
     return (
         <div>
@@ -246,30 +261,30 @@ const Pedidos = () => {
                     {pedidos.map((pedido) => (
                         <React.Fragment key={pedido.id_pedido}>
                             <tr>
-                                <td>{pedido.id_cliente}</td>
+                                <td>
+                                    <button onClick={() => fetchClienteInfo(pedido.id_cliente)}>
+                                        Info del Cliente
+                                    </button>
+                                </td>
                                 <td>{new Date(pedido.fecha_hora).toLocaleString()}</td>
                                 <td>{pedido.estado}</td>
                                 <td>{pedido.comentario}</td>
                                 <td>{pedido.domicilio_entrega}</td>
-
                                 <td>
                                     <button onClick={() => toggleDetalles(pedido.id_pedido)}>
                                         {expandedPedidoId === pedido.id_pedido ? 'Ocultar detalles' : 'Ver detalles'}
                                     </button>
-                                    <button onClick={() => setIsModalOpen(true)}>Agregar Plato</button>
-
+                                    <button onClick={() => setIsAgregarPlatoModalOpen(true)}>Agregar Plato</button>
                                 </td>
                                 <td>
-                                {Number(pedido.pagado) === 1 ? "Pagado" : "No pagado"}
-                                    
-                                </td>
+                                    {Number(pedido.pagado) === 1 ? "Pagado" : "No pagado"}</td>
                             </tr>
+
                             {expandedPedidoId === pedido.id_pedido && (
                                 <tr>
                                     <td colSpan="7">
                                         <h3>Detalles del Pedido:</h3>
                                         <p>Repartidor: {repartidoresCargados[pedido.id_repartidor] || 'Cargando...'}</p>
-
                                         <table>
                                             <thead>
                                                 <tr>
@@ -278,7 +293,6 @@ const Pedidos = () => {
                                                     <th>Nombre del Plato</th>
                                                     <th>Precio</th>
                                                     <th>Acciones</th>
-
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -295,7 +309,7 @@ const Pedidos = () => {
                                                 ))}
                                             </tbody>
                                         </table>
-                                        
+                                                                          
                                         <h3>Actualizar Pedido</h3>
                                         <form
                                             onSubmit={(e) => {
@@ -358,8 +372,9 @@ const Pedidos = () => {
                     ))}
                 </tbody>
             </table>
-            
-            {isModalOpen && (
+
+            {/* Modal para agregar plato */}
+            {isAgregarPlatoModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
                         <h3>Seleccionar Plato para agregar</h3>
@@ -368,12 +383,26 @@ const Pedidos = () => {
                             {availablePlatos.map(plato => (
                                 <option key={plato.id_plato} value={JSON.stringify(plato)}>
                                     {plato.nombre} - ${plato.precio} - {plato.disponible === 1 ? 'Disponible' : 'No disponible'}
-                                </option>
+                                    </option>
                             ))}
                         </select>
                         <br />
                         <button onClick={() => addPlatoToPedido(expandedPedidoId)}>Agregar Plato</button>
                         <button onClick={() => setIsModalOpen(false)}>Cerrar</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para información del cliente */}
+            {isClienteModalOpen && selectedCliente && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Información del Cliente</h3>
+                        <p><strong>Nombre:</strong> {selectedCliente.nombre}</p>
+                        <p><strong>Email:</strong> {selectedCliente.correo}</p>
+                        <p><strong>Teléfono:</strong> {selectedCliente.telefono}</p>
+                        <p><strong>Dirección:</strong> {selectedCliente.domicilio}</p>
+                        <button onClick={() => setIsClienteModalOpen(false)}>Cerrar</button>
                     </div>
                 </div>
             )}
