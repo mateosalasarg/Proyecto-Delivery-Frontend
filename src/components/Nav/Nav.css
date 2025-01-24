@@ -101,3 +101,38 @@
     top: -5px;
     right: -5px;
 }
+.cart-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.cart-menu h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.cart-menu .close-cart {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.cart-menu .cart-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
