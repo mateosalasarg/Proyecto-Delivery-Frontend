@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react'; // Asegúrate de incluir useContext
+
 import { Routes, Route, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { AuthProvider, AuthContext } from './auth/AuthContext';
 import Nav from './components/Nav/Nav';
 import Home from './pages/Home/Home';
 import Cart from './pages/Cart/Cart';
-import Order from './pages/Order/Order';
-import Login from './pages/Login/Login';
+import Login from './pages/Login/LoginCliente/Login';
 import LoginPage from './pages/admin/LoginPage'; // Importamos LoginPage
 import DashboardPage from './pages/Admin/DashboardPage';
 import Pedidos from './pages/Admin/Pedidos'
 import Platos from './pages/Admin/Platos'
 import OrderForm from './components/OrdenForm/OrderForm';
+import DriverLogin from './pages/Login/LoginRepartidor/DriverLogin';
+import DriverProfile from './pages/Repartidor/DriverProfile';
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
@@ -23,7 +25,16 @@ const ProtectedRoute = ({ children }) => {
 
     return children;
 };
+// Componente para proteger rutas
+const ProtectedDriverRoute = ({ children }) => {
+    const { isDriverAuthenticated } = useContext(AuthContext);
 
+    if (!isDriverAuthenticated) {
+        return <div>Acceso no autorizado. Por favor, inicia sesión como repartidor.</div>;
+    }
+
+    return children;
+};
 ProtectedRoute.propTypes = {
     children: PropTypes.node.isRequired, // Valida que 'children' sea un nodo React
 };
@@ -97,6 +108,21 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+                                     <Route
+    path="/repartidor/login"
+    element={
+            <DriverLogin /> 
+    }
+/>
+                                     <Route
+    path="/repartidor/:id"
+    element={
+        <ProtectedDriverRoute>
+            <DriverProfile /> 
+            </ProtectedDriverRoute>
+    }
+/>
+
                     {/* Ruta para el login general */}
                     <Route path="/" element={<Login />} />
                 </Routes>
