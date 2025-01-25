@@ -1,37 +1,32 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useContext } from 'react';
+import { AuthContext } from '../../../auth/AuthContext';
 
 const DriverLogin = () => {
-  const [telefono, setTelefono] = useState("");
-  const [contraseña, setContraseña] = useState("");
-  const [error, setError] = useState("");
+  const [telefono, setTelefono] = useState('');
+  const [contraseña, setContraseña] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { loginDriver } = useContext(AuthContext); // Usamos loginDriver
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     try {
-      const response = await axios.post("http://127.0.0.1:5000/repartidores/login", {
+      const response = await axios.post('http://127.0.0.1:5000/repartidores/login', {
         telefono,
         contraseña,
       });
 
       if (response.status === 200) {
-        // Guardar el token y datos del repartidor en el localStorage
-        localStorage.setItem("repartidorToken", response.data.token); // Si la API devuelve un token
-        localStorage.setItem("repartidorId", response.data.repartidorId); // Almacena la ID del repartidor si es necesario
-        localStorage.setItem("repartidorData", JSON.stringify(response.data.repartidorData)); // Almacena los datos del repartidor completos
-
-        navigate("/repartidor"); // Redirigir al perfil del repartidor
+        loginDriver(response.data.repartidorData); // Usar loginDriver del contexto
+        navigate(`/repartidor/${repartidorId}`); // Redirigimos al perfil usando la id del repartidor
       }
     } catch (err) {
-      if (err.response && err.response.status === 401) {
-        setError("Teléfono o contraseña incorrectos.");
-      } else {
-        setError("Error al intentar iniciar sesión. Intente nuevamente.");
-      }
+      setError('Error al intentar iniciar sesión. Intente nuevamente.');
     }
   };
 

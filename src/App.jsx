@@ -12,7 +12,7 @@ import DashboardPage from './pages/Admin/DashboardPage';
 import Pedidos from './pages/Admin/Pedidos'
 import Platos from './pages/Admin/Platos'
 import OrderForm from './components/OrdenForm/OrderForm';
-
+import DriverLogin from './pages/Login/LoginRepartidor/DriverLogin';
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated } = React.useContext(AuthContext);
@@ -23,7 +23,16 @@ const ProtectedRoute = ({ children }) => {
 
     return children;
 };
+// Componente para proteger rutas
+const ProtectedDriverRoute = ({ children }) => {
+    const { isDriverAuthenticated } = useContext(AuthContext);
 
+    if (!isDriverAuthenticated) {
+        return <div>Acceso no autorizado. Por favor, inicia sesión como repartidor.</div>;
+    }
+
+    return children;
+};
 ProtectedRoute.propTypes = {
     children: PropTypes.node.isRequired, // Valida que 'children' sea un nodo React
 };
@@ -97,6 +106,13 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+                                     <Route
+    path="/repartidor/login"
+    element={
+            <DriverLogin /> 
+    }
+/>
+
                     {/* Ruta para el login general */}
                     <Route path="/" element={<Login />} />
                 </Routes>

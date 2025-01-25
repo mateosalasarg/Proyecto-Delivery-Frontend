@@ -1,15 +1,15 @@
 import { useState } from "react";
-import useAuth from "../../../auth/useAuth"; // Importa el hook useAuth
+import useAuth from "../../../auth/useAuth"; // Usamos el hook useAuth para obtener las funciones de login
 import "./style.css"; // Asegúrate de importar tus estilos
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
-  const [domicilio, setDomicilio] = useState("");  // Nuevo campo domicilio
-  const [telefono, setTelefono] = useState("");   // Nuevo campo teléfono
+  const [domicilio, setDomicilio] = useState(""); // Nuevo campo domicilio
+  const [telefono, setTelefono] = useState(""); // Nuevo campo teléfono
   const [error, setError] = useState("");
   const [isRegistering, setIsRegistering] = useState(false); // Estado para alternar entre registro e inicio de sesión
-  const { login } = useAuth(); // Usamos la función de login del contexto
+  const { loginClient } = useAuth(); // Usamos la función loginClient del contexto
 
   const toggleForm = () => {
     setIsRegistering(!isRegistering); // Alterna entre los formularios
@@ -23,7 +23,7 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.id_cliente) {
-          login(data); // Pasa los datos del cliente a la función de login
+          loginClient(data); // Pasa los datos del cliente a la función de login del contexto
         } else {
           setError("El correo no está asociado a ningún cliente.");
         }
@@ -42,20 +42,20 @@ const Login = () => {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Verificamos que los campos esenciales estén completos
     if (!nombre || !email || !domicilio) {
       setError("El nombre, correo y domicilio son obligatorios.");
       return;
     }
-  
+
     const newClient = {
       nombre,
-      correo: email,  
+      correo: email,
       domicilio,
       telefono: telefono || "", // El teléfono es opcional
     };
-  
+
     try {
       const response = await fetch("http://127.0.0.1:5000/clientes/crear", {
         method: "POST",
@@ -64,7 +64,7 @@ const Login = () => {
         },
         body: JSON.stringify(newClient),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         if (data.message === "Cliente creado exitosamente") {
@@ -81,7 +81,6 @@ const Login = () => {
       console.error("Error al hacer la solicitud:", error); // Ver detalles del error en la consola
     }
   };
-  
 
   return (
     <div className={`container-form ${isRegistering ? "register" : "login"}`}>
