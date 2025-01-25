@@ -31,15 +31,11 @@ const AuthProvider = ({ children }) => {
         }
 
         // Intentamos obtener los datos del cliente de localStorage de forma segura
-     
-
         try {
             storedUser = JSON.parse(localStorage.getItem('user'));
         } catch (error) {
             console.error("Error al intentar parsear los datos del usuario:", error);
         }
-
-     
 
         if (storedUserAuth === 'true' && storedUser) {
             setIsAuthenticated(true);
@@ -48,7 +44,6 @@ const AuthProvider = ({ children }) => {
 
         if (storedDriverAuth === 'true' && storedDriver) {
             console.log('Stored driver:', storedDriver);  // Verifica los datos del repartidor
-
             setIsDriverAuthenticated(true);
             setDriver(storedDriver);
         }
@@ -61,6 +56,7 @@ const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(userData));
         navigate('/home');
     };
+
     const loginDriver = (driverData) => {
         console.log('Driver data received:', driverData); // Verifica que se reciben todos los datos
         if (driverData && driverData.id_repartidor) { // Asegúrate de que el `id_repartidor` esté presente
@@ -74,7 +70,7 @@ const AuthProvider = ({ children }) => {
             console.error('No driver id_repartidor or data received!');
         }
     };
-    
+
     const logout = () => {
         setIsAuthenticated(false);
         setUser(null);
@@ -95,7 +91,8 @@ const AuthProvider = ({ children }) => {
             driver, 
             loginClient, 
             loginDriver, 
-            logout
+            logout,
+            setDriver // Asegúrate de que setDriver esté aquí
         }}>
             {children}
         </AuthContext.Provider>
