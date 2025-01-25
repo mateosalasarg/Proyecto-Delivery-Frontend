@@ -1,6 +1,6 @@
 import { useState } from "react";
-import useAuth from "../../auth/useAuth"; // Importa el hook useAuth
-import "./styles/style.css"; // Asegúrate de importar tus estilos
+import useAuth from "../../../auth/useAuth"; // Importa el hook useAuth
+import "./style.css"; // Asegúrate de importar tus estilos
 
 const Login = () => {
   const [email, setEmail] = useState("");

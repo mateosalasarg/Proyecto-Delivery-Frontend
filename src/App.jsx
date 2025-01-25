@@ -6,7 +6,7 @@ import Nav from './components/Nav/Nav';
 import Home from './pages/Home/Home';
 import Cart from './pages/Cart/Cart';
 import Order from './pages/Order/Order';
-import Login from './pages/Login/Login';
+import Login from './pages/Login/LoginCliente/Login';
 import LoginPage from './pages/admin/LoginPage'; // Importamos LoginPage
 import DashboardPage from './pages/Admin/DashboardPage';
 import Pedidos from './pages/Admin/Pedidos'

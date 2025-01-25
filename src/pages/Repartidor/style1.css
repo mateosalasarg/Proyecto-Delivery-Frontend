@@ -1,0 +1,51 @@
+.orders-list {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+  }
+  
+  .order-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .order-item h3 {
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .order-item p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  .order-item button {
+    padding: 5px 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .order-item button:hover {
+    background: #0056b3;
+  }
+  
+  .order-item.completed {
+    background-color: #e5ffe5;
+    border-color: #0ca828;
+  }
+  .order-item.rejected {
+    background-color: #ffe5e5;
+    border-color: #f66060;
+  }
+  
+  .rejected-message {
+    color: #f66060;
+    font-weight: bold;
+  }
+  
