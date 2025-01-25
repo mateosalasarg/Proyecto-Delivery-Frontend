@@ -11,7 +11,6 @@ import LoginPage from './pages/admin/LoginPage'; // Importamos LoginPage
 import DashboardPage from './pages/Admin/DashboardPage';
 import Pedidos from './pages/Admin/Pedidos'
 import Platos from './pages/Admin/Platos'
-import FoodDetails from './components/FoodDetails/FoodDetails';
 import OrderForm from './components/OrdenForm/OrderForm';
 
 // Componente para proteger rutas
@@ -69,7 +68,7 @@ const App = () => {
                         path="/order"
                         element={
                             <ProtectedRoute>
-                                <Order />
+                                <OrderForm/>
                             </ProtectedRoute>
                         }
                     />
@@ -89,16 +88,9 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+        
                     <Route
-                        path="/food-details/:id"
-                        element={
-                            <ProtectedRoute>
-                                <FoodDetails /> {/* Componente donde se muestran los platos */}
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/order/:id"
+                        path="/order"
                         element={
                             <ProtectedRoute>
                                 <OrderForm /> {/* Componente donde se muestran los platos */}
