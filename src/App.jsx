@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react'; // Asegúrate de incluir useContext
+
 import { Routes, Route, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { AuthProvider, AuthContext } from './auth/AuthContext';
 import Nav from './components/Nav/Nav';
 import Home from './pages/Home/Home';
 import Cart from './pages/Cart/Cart';
-import Order from './pages/Order/Order';
 import Login from './pages/Login/LoginCliente/Login';
 import LoginPage from './pages/admin/LoginPage'; // Importamos LoginPage
 import DashboardPage from './pages/Admin/DashboardPage';
@@ -13,6 +13,8 @@ import Pedidos from './pages/Admin/Pedidos'
 import Platos from './pages/Admin/Platos'
 import OrderForm from './components/OrdenForm/OrderForm';
 import DriverLogin from './pages/Login/LoginRepartidor/DriverLogin';
+import DriverProfile from './pages/Repartidor/DriverProfile';
+
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated } = React.useContext(AuthContext);
@@ -110,6 +112,14 @@ const App = () => {
     path="/repartidor/login"
     element={
             <DriverLogin /> 
+    }
+/>
+                                     <Route
+    path="/repartidor/:id"
+    element={
+        <ProtectedDriverRoute>
+            <DriverProfile /> 
+            </ProtectedDriverRoute>
     }
 />
 

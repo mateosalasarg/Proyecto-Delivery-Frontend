@@ -1,118 +1,197 @@
-import React, { useState, useEffect } from "react";
-import { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../auth/AuthContext";
+import "./style1.css";
 
 const DriverProfile = () => {
-  const { user } = useContext(AuthContext);  // Obtén los datos del repartidor desde el contexto
-  const [driverData, setDriverData] = useState(null); // Estado para almacenar los datos del repartidor
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      clientName: "Carlos Gómez",
-      address: "Avenida Siempre Viva 742",
-      details: "2 pizzas grandes, 1 coca cola",
-      status: "Pendiente",
-    },
-    {
-      id: 2,
-      clientName: "María López",
-      address: "Calle Los Pinos 123",
-      details: "1 hamburguesa con papas, 1 limonada",
-      status: "Pendiente",
-    },
-  ]);
+  const navigate = useNavigate();
+  const { driver } = useContext(AuthContext);
+  const [pedidos, setPedidos] = useState([]);
+  const [repartidor, setRepartidor] = useState(null); // Estado para los detalles del repartidor
+  const [error, setError] = useState(null);
 
-  // Efecto para cargar los datos del repartidor al montar el componente
   useEffect(() => {
-    if (user?.id) {
-      fetch(`http://127.0.0.1:5000/repartidores/${user.id}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setDriverData(data); // Almacenamos los datos del repartidor
-        })
-        .catch((error) => {
-          console.error("Error fetching driver data:", error);
-        });
+    if (!driver) {
+      navigate("/login");
+      return;
     }
-  }, [user?.id]);
+
+    // Obtener información del repartidor
+    fetch(`http://127.0.0.1:5000/repartidores/${driver.id_repartidor}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al cargar los datos del repartidor");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setRepartidor(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching driver details:", error);
+        setError("Error al cargar los datos del repartidor");
+      });
+
+    // Obtener los pedidos asignados al repartidor
+    fetch(`http://127.0.0.1:5000/pedidos/repartidores/${driver.id_repartidor}`)
+      .then((response) => {
+        if (response.status === 404) {
+          setError("No tiene pedidos asignados, comuníquese con el administrador.");
+          return []; // Si no tiene pedidos, retornamos un array vacío
+        }
+        if (!response.ok) {
+          throw new Error("Error al cargar los pedidos del repartidor");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setPedidos(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching orders:", error);
+        setError("Error al cargar los pedidos del repartidor");
+      });
+  }, [driver, navigate]);
+
+  const updatePedido = (id, body, successMessage) => {
+    fetch(`http://127.0.0.1:5000/pedidos/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error en la actualización del pedido");
+        }
+        return response.json();
+      })
+      .then(() => {
+        setPedidos((prevPedidos) =>
+          prevPedidos.map((pedido) =>
+            pedido.id_pedido === id
+              ? { ...pedido, ...body } // Actualiza los valores dinámicamente
+              : pedido
+          )
+        );
+        alert(successMessage);
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("No se pudo actualizar el pedido");
+      });
+  };
 
   const markAsDelivered = (id) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === id ? { ...order, status: "Entregado" } : order
-      )
+    updatePedido(
+      id,
+      { field: "estado", value: "En camino" },
+      `El pedido #${id} fue marcado como "En camino".`
     );
-    alert(`El pedido #${id} fue marcado como entregado.`);
   };
 
   const markAsRejected = (id) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === id ? { ...order, status: "Rechazado" } : order
-      )
+    updatePedido(
+      id,
+      { field: "id_repartidor", value: null },
+      `El pedido #${id} fue rechazado.`
     );
-    alert(`El pedido #${id} fue rechazado.`);
   };
 
-  if (!driverData) {
-    return <div>Cargando perfil...</div>;  // Muestra un mensaje mientras se cargan los datos
+  if (error) {
+    return (
+      <div>
+        {repartidor && (
+          <div>
+            <h2>Información del Repartidor:</h2>
+            <p><strong>Nombre:</strong> {repartidor.nombre}</p>
+            <p><strong>Correo:</strong> {repartidor.correo}</p>
+            <p><strong>Teléfono:</strong> {repartidor.telefono}</p>
+          </div>
+        )}
+        <div>{error}</div>
+      </div>
+    ); // Mostrar mensaje de error y la información del repartidor
+  }
+
+  if (!pedidos.length) {
+    return (
+      <div>
+        {repartidor && (
+          <div>
+            <h2>Información del Repartidor:</h2>
+            <p><strong>Nombre:</strong> {repartidor.nombre}</p>
+            <p><strong>Disponible:</strong> {repartidor.disponible}</p>
+            <p><strong>Teléfono:</strong> {repartidor.telefono}</p>
+          </div>
+        )}
+        <div>No tiene pedidos asignados, comuníquese con el administrador.</div>
+      </div>
+    ); // Mostrar la información del repartidor con el mensaje de no tener pedidos
   }
 
   return (
     <div className="driver-profile">
-      <h2>Perfil del Repartidor</h2>
-      <div className="profile-info">
-        <label>
-          Nombre: <span id="name-display">{driverData.name}</span>
-        </label>
-        <label>
-          Correo Electrónico: <span id="email-display">{driverData.email}</span>
-        </label>
-        <label>
-          Teléfono: <span id="phone-display">{driverData.phone}</span>
-        </label>
-        <label>
-          Dirección: <span id="address-display">{driverData.address}</span>
-        </label>
-      </div>
-
-      <h2>Pedidos Asignados</h2>
+      <h2>Pedidos asignados al Repartidor</h2>
       <div className="orders-list">
-        {orders.map((order) => (
+        {pedidos.map((pedido) => (
           <div
-            key={order.id}
+            key={pedido.id_pedido}
             className={`order-item ${
-              order.status === "Entregado" ? "completed" : ""
-            } ${order.status === "Rechazado" ? "rejected" : ""}`}
+              pedido.estado === "Entregado"
+                ? "completed"
+                : pedido.estado === "Rechazado"
+                ? "rejected"
+                : ""
+            }`}
           >
-            <h3>Pedido #{order.id}</h3>
+            <h3>Pedido #{pedido.id_pedido}</h3>
             <p>
-              <strong>Cliente:</strong> {order.clientName}
+              <strong>Domicilio de entrega:</strong> {pedido.domicilio_entrega}
             </p>
             <p>
-              <strong>Dirección:</strong> {order.address}
+              <strong>Estado:</strong> {pedido.estado}
             </p>
             <p>
-              <strong>Detalles:</strong> {order.details}
+              <strong>Pagado:</strong> {pedido.pagado === 1 ? "Sí" : "No"}
             </p>
             <p>
-              <strong>Estado:</strong> {order.status}
+              <strong>Fecha y hora:</strong>{" "}
+              {new Date(pedido.fecha_hora).toLocaleString()}
             </p>
-            {order.status === "Pendiente" ? (
-              <>
-                <button onClick={() => markAsDelivered(order.id)}>
-                  Marcar como Entregado
+            <div className="order-details">
+              <h4>Detalles:</h4>
+              <ul>
+                {pedido.detalles.map((detalle, index) => (
+                  <li key={index}>
+                    <strong>Plato #{detalle.id_plato}:</strong>{" "}
+                    {detalle.cantidad} unidades - {detalle.comentario}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {pedido.estado === "Pendiente" && (
+              <div style={{ marginTop: "10px" }}>
+                <button
+                  onClick={() => markAsDelivered(pedido.id_pedido)}
+                  style={{ marginRight: "10px" }}
+                >
+                  Marcar como En camino
                 </button>
                 <button
-                  onClick={() => markAsRejected(order.id)}
+                  onClick={() => markAsRejected(pedido.id_pedido)}
                   className="reject-button"
                 >
                   Rechazar Pedido
                 </button>
-              </>
-            ) : order.status === "Entregado" ? (
+              </div>
+            )}
+
+            {pedido.estado === "Entregado" && (
               <p className="completed-message">Pedido Entregado</p>
-            ) : (
+            )}
+            {pedido.estado === "Rechazado" && (
               <p className="rejected-message">Pedido Rechazado</p>
             )}
           </div>

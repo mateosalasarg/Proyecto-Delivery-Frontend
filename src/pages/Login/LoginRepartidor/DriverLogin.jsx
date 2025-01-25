@@ -22,8 +22,9 @@ const DriverLogin = () => {
       });
 
       if (response.status === 200) {
-        loginDriver(response.data.repartidorData); // Usar loginDriver del contexto
-        navigate(`/repartidor/${repartidorId}`); // Redirigimos al perfil usando la id del repartidor
+        const driverData = response.data; // Obtenemos los datos del repartidor
+        loginDriver(driverData); // Guardamos los datos en el contexto
+        navigate('/repartidor/profile'); // Redirigimos al perfil del repartidor sin necesidad de id
       }
     } catch (err) {
       setError('Error al intentar iniciar sesión. Intente nuevamente.');
