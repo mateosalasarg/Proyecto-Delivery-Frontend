@@ -1,0 +1,9 @@
+.btn-disponible {
+  background-color: green;
+  color: white;
+}
+
+.btn-no-disponible {
+  background-color: red;
+  color: white;
+}
