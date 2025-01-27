@@ -1,84 +1,69 @@
 import { useState } from "react";
-import useAuth from "../../../auth/useAuth"; // Usamos el hook useAuth para obtener las funciones de login
-import "./style.css"; // Asegúrate de importar tus estilos
+import useAuth from "../../../auth/useAuth";
+import "./style.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
-  const [domicilio, setDomicilio] = useState(""); // Nuevo campo domicilio
-  const [telefono, setTelefono] = useState(""); // Nuevo campo teléfono
+  const [domicilio, setDomicilio] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [contraseña, setContraseña] = useState("");
   const [error, setError] = useState("");
-  const [isRegistering, setIsRegistering] = useState(false); // Estado para alternar entre registro e inicio de sesión
-  const { loginClient } = useAuth(); // Usamos la función loginClient del contexto
+  const [isRegistering, setIsRegistering] = useState(false);
+  const { loginClient } = useAuth();
 
-  const toggleForm = () => {
-    setIsRegistering(!isRegistering); // Alterna entre los formularios
-  };
+  const toggleForm = () => setIsRegistering(!isRegistering);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    if (!email || !contraseña) {
+      setError("Correo y contraseña son obligatorios.");
+      return;
+    }
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/clientes/${email}`);
+      const response = await fetch("http://127.0.0.1:5000/clientes/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo: email, contraseña }),
+      });
+
       if (response.ok) {
         const data = await response.json();
-        if (data.id_cliente) {
-          loginClient(data); // Pasa los datos del cliente a la función de login del contexto
-        } else {
-          setError("El correo no está asociado a ningún cliente.");
-        }
+        loginClient(data);
       } else {
         const errorData = await response.json();
-        if (errorData.error && errorData.error.code === 404) {
-          setError("El correo no está registrado en nuestra base de datos.");
-        } else {
-          setError("Error al comunicarse con el servidor.");
-        }
+        setError(errorData.error || "Correo o contraseña incorrectos.");
       }
-    } catch (error) {
-      setError("Hubo un problema al realizar la solicitud.");
+    } catch {
+      setError("Error al conectar con el servidor.");
     }
   };
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-
-    // Verificamos que los campos esenciales estén completos
-    if (!nombre || !email || !domicilio) {
-      setError("El nombre, correo y domicilio son obligatorios.");
+    if (!nombre || !email || !domicilio || !contraseña) {
+      setError("Todos los campos son obligatorios, excepto teléfono.");
       return;
     }
-
-    const newClient = {
-      nombre,
-      correo: email,
-      domicilio,
-      telefono: telefono || "", // El teléfono es opcional
-    };
 
     try {
       const response = await fetch("http://127.0.0.1:5000/clientes/crear", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newClient),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, correo: email, domicilio, telefono, contraseña }),
       });
 
       if (response.ok) {
-        const data = await response.json();
-        if (data.message === "Cliente creado exitosamente") {
-          alert("Cliente registrado exitosamente");
-          setError(""); // Limpiar el mensaje de error
-          toggleForm(); // Cambiar a la vista de inicio de sesión
-        }
+        alert("Cliente registrado exitosamente.");
+        setError("");
+        toggleForm();
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Error al registrar el cliente.");
       }
-    } catch (error) {
-      setError("Hubo un problema al realizar la solicitud.");
-      console.error("Error al hacer la solicitud:", error); // Ver detalles del error en la consola
+    } catch {
+      setError("Error al conectar con el servidor.");
     }
   };
 
@@ -87,98 +72,77 @@ const Login = () => {
       {isRegistering ? (
         <>
           <div className="information">
-            <div className="info-childs">
-              <h2>Bienvenido</h2>
-              <p>Para unirte a nuestra comunidad, regístrate con tus datos.</p>
-              <input type="button" value="Iniciar Sesión" onClick={toggleForm} />
-            </div>
+            
+            <h2>Bienvenido</h2>
+            <p>Regístrate para unirte a nuestra comunidad.</p>
+            <button onClick={toggleForm}>Iniciar Sesión</button>
           </div>
-          <div className="form-information">
-            <div className="form-information-childs">
-              <h2>Crear una Cuenta</h2>
-              <p>Usa tu email para registrarte.</p>
-              <form className="form form-register" onSubmit={handleRegisterSubmit}>
-                <div>
-                  <label>
-                    <input
-                      type="text"
-                      placeholder="Nombre Completo"
-                      name="userName"
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
-                      required
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    <input
-                      type="email"
-                      placeholder="Correo Electrónico"
-                      name="userEmail"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    <input
-                      type="text"
-                      placeholder="Domicilio"
-                      name="domicilio"
-                      value={domicilio}
-                      onChange={(e) => setDomicilio(e.target.value)}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    <input
-                      type="text"
-                      placeholder="Teléfono (Opcional)"
-                      name="telefono"
-                      value={telefono}
-                      onChange={(e) => setTelefono(e.target.value)}
-                    />
-                  </label>
-                </div>
-                <input type="submit" value="Registrarse" />
-              </form>
-            </div>
-          </div>
+          <form className="form" onSubmit={handleRegisterSubmit}>
+            <h2>Registro</h2>
+            <input
+              type="text"
+              placeholder="Nombre Completo"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Correo Electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Domicilio"
+              value={domicilio}
+              onChange={(e) => setDomicilio(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Teléfono (Opcional)"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={contraseña}
+              onChange={(e) => setContraseña(e.target.value)}
+              required
+            />
+            <button type="submit">Registrarse</button>
+            {error && <p className="error">{error}</p>}
+          </form>
         </>
       ) : (
         <>
           <div className="information">
-            <div className="info-childs">
-              <h2>¡Bienvenido nuevamente!</h2>
-              <p>Inicia sesión con tus datos para continuar.</p>
-              <input type="button" value="Registrarse" onClick={toggleForm} />
-            </div>
+            <h2>Bienvenido</h2>
+            <p>Inicia sesión para continuar.</p>
+            <button onClick={toggleForm}>Registrarse</button>
           </div>
-          <div className="form-information">
-            <div className="form-information-childs">
-              <h2>Iniciar Sesión</h2>
-              <p>Con una cuenta email o celular.</p>
-              <form className="form form-login" onSubmit={handleLoginSubmit}>
-                <div>
-                  <label>
-                    <input
-                      type="email"
-                      placeholder="Correo Electrónico"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </label>
-                </div>
-                <button type="submit">Iniciar Sesión</button>
-              </form>
-              {error && <p style={{ color: "red" }}>{error}</p>}
-            </div>
-          </div>
+          <form className="form" onSubmit={handleLoginSubmit}>
+            <h2>Inicio de Sesión</h2>
+            <input
+              type="email"
+              placeholder="Correo Electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={contraseña}
+              onChange={(e) => setContraseña(e.target.value)}
+              required
+            />
+            <button type="submit">Iniciar Sesión</button>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            </form>
         </>
       )}
     </div>
