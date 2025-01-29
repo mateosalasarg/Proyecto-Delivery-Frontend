@@ -1,0 +1,68 @@
+.repartidores-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .repartidores-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .repartidores-form input,
+  .repartidores-form select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .repartidores-form button {
+    background: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .repartidores-form button:hover {
+    background: #218838;
+  }
+  
+  .repartidores-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .repartidor-item {
+    display: flex;
+    justify-content: space-between;
+    background: white;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .repartidor-item button {
+    background: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .repartidor-item button:hover {
+    background: #c82333;
+  }
+  

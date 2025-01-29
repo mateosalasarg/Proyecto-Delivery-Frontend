@@ -11,6 +11,8 @@ import LoginPage from './pages/admin/LoginPage'; // Importamos LoginPage
 import DashboardPage from './pages/Admin/DashboardPage';
 import Pedidos from './pages/Admin/Pedidos'
 import Platos from './pages/Admin/Platos'
+import Repartidor from './pages/Admin/Repartidor'
+
 import OrderForm from './components/OrdenForm/OrderForm';
 import DriverLogin from './pages/Login/LoginRepartidor/DriverLogin';
 import DriverProfile from './pages/Repartidor/DriverProfile';
@@ -96,6 +98,14 @@ const App = () => {
                         element={
                             <ProtectedRoute>
                                 <Platos /> {/* Componente donde se muestran los platos */}
+                            </ProtectedRoute>
+                        }
+                    />
+                                 <Route
+                        path="/admin/repartidores"
+                        element={
+                            <ProtectedRoute>
+                                <Repartidor /> {/* Componente donde se muestran los platos */}
                             </ProtectedRoute>
                         }
                     />
