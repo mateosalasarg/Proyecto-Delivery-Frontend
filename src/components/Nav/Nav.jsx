@@ -30,13 +30,22 @@ const Nav = () => {
         navigate('/order', { state: { carrito } });
     };
 
+    // Funciones de navegación
+    const handleNavigateHome = () => {
+        navigate('/home');
+    };
+
+    const handleNavigateOrders = () => {
+        navigate('/estado-pedido');
+    };
+
     return (
         <>
             <nav className="nav">
                 <img src={assets.logo} alt="Logo" className="logo" />
                 <ul className="nav-links">
-                    <li>Inicio</li>
-                    <li>Mis pedidos</li>
+                    <li onClick={handleNavigateHome}>Inicio</li> {/* Redirige a /home */}
+                    <li onClick={handleNavigateOrders}>Mis pedidos</li> {/* Redirige a /estado-pedido */}
                     <li>Contáctanos</li>
                 </ul>
                 <div className="nav-right">
