@@ -36,7 +36,7 @@ const Nav = () => {
                 <img src={assets.logo} alt="Logo" className="logo" />
                 <ul className="nav-links">
                     <li>Inicio</li>
-                    <li>Menú</li>
+                    <li>Mis pedidos</li>
                     <li>Contáctanos</li>
                 </ul>
                 <div className="nav-right">
