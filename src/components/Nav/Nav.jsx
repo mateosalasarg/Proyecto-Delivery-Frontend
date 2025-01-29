@@ -39,6 +39,11 @@ const Nav = () => {
         navigate('/estado-pedido');
     };
 
+    // Redirigir al login
+    const handleLogin = () => {
+        navigate('/'); // Redirige a la página de inicio
+    };
+
     return (
         <>
             <nav className="nav">
@@ -49,7 +54,6 @@ const Nav = () => {
                     <li>Contáctanos</li>
                 </ul>
                 <div className="nav-right">
-                    <img src={assets.search_icon} alt="Buscar" className="icon" />
                     <div className="nav-search-icon" onClick={toggleCartMenu}>
                         <img src={assets.bowl_icon} alt="Bowl" className="icon" />
                         {totalItems > 0 && (
@@ -66,7 +70,9 @@ const Nav = () => {
                             </button>
                         </div>
                     ) : (
-                        <button className="nav-button">Iniciar sesión</button>
+                        <button className="nav-button" onClick={handleLogin}>
+                            Iniciar sesión
+                        </button>
                     )}
                 </div>
             </nav>

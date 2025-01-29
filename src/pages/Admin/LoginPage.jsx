@@ -1,24 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import './StylesAdmin/LoginPage.css';
+import { AuthContext } from '../../auth/AuthContext'; // Importa el contexto de autenticación
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [dni, setDni] = useState('');
   const [contraseña, setContraseña] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const { loginAdmin } = useContext(AuthContext); // Obtener la función loginAdmin desde el contexto
+  const navigate = useNavigate(); // Hook para redirigir a la página de administración
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await axios.post('http://localhost:5000/admin/login', {
         dni,
         contraseña
       });
-      
+
       if (response.status === 200) {
-        localStorage.setItem('adminToken', response.data.token);
-        window.location.href = '/dashboard';  // Redirigir a la página de administrador
+        // Llamar a loginAdmin para autenticar al admin y guardar en el contexto
+        loginAdmin(response.data.admin);
+
+        // Redirigir a la página de administrador
+        navigate('/dashboard');  // O la ruta que quieras para el panel de administración
       }
     } catch (error) {
       if (error.response) {

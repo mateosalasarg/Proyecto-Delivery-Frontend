@@ -30,7 +30,7 @@ const ProtectedRoute = ({ children }) => {
 };
 // Componente para proteger rutas
 const ProtectedDriverRoute = ({ children }) => {
-    const { isDriverAuthenticated } = useContext(AuthContext);
+    const { isDriverAuthenticated } = React.useContext(AuthContext);
 
     if (!isDriverAuthenticated) {
         return <div>Acceso no autorizado. Por favor, inicia sesión como repartidor.</div>;
@@ -41,6 +41,20 @@ const ProtectedDriverRoute = ({ children }) => {
 ProtectedRoute.propTypes = {
     children: PropTypes.node.isRequired, // Valida que 'children' sea un nodo React
 };
+// Componente para proteger rutas
+const ProtectedAdminRoute = ({ children }) => {
+    const { isAdminAuthenticated } = React.useContext(AuthContext);
+
+    if (!isAdminAuthenticated) {
+        return <div>Acceso no autorizado. Por favor, inicia sesión como Administrador.</div>;
+    }
+
+    return children;
+};
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired, // Valida que 'children' sea un nodo React
+};
+
 
 const App = () => {
     const location = useLocation(); // Obtener la ubicación actual
@@ -56,9 +70,9 @@ const App = () => {
                     <Route
                     path="/dashboard"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedAdminRoute>
                             <DashboardPage /> {/* Asegúrate de que este componente esté definido */}
-                        </ProtectedRoute>
+                        </ProtectedAdminRoute>
                     }
                 />
                     {/* Rutas protegidas para el usuario autenticado */}
@@ -97,25 +111,25 @@ const App = () => {
                     <Route
                         path="/admin/pedidos"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedAdminRoute>
                                 <Pedidos /> {/* Componente donde se muestran los pedidos */}
-                            </ProtectedRoute>
+                            </ProtectedAdminRoute>
                         }
                     />
                     <Route
                         path="/admin/platos"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedAdminRoute>
                                 <Platos /> {/* Componente donde se muestran los platos */}
-                            </ProtectedRoute>
+                            </ProtectedAdminRoute>
                         }
                     />
                                  <Route
                         path="/admin/repartidores"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedAdminRoute>
                                 <Repartidor /> {/* Componente donde se muestran los platos */}
-                            </ProtectedRoute>
+                            </ProtectedAdminRoute>
                         }
                     />
         
