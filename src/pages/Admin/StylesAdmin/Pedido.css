@@ -257,6 +257,6 @@ form .form-actions {
 }
 
 .estado-entregado {
-    background-color: #d3d3d3; /* Gris claro para simular "deshabilitado" */
-    color: #a9a9a9; /* Texto gris */
+    background-color: #d3d3d3   ; /* Gris claro para simular "deshabilitado" */
+    color: #ffffff; /* Texto gris */
 }

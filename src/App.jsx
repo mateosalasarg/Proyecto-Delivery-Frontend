@@ -148,7 +148,7 @@ const App = () => {
     }
 />
                                      <Route
-    path="/repartidor/:id"
+    path="/repartidor/profile"
     element={
         <ProtectedDriverRoute>
             <DriverProfile /> 

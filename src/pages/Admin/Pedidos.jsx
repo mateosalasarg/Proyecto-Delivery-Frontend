@@ -256,7 +256,6 @@ const Pedidos = () => {
     if (loading) return <div>Cargando pedidos...</div>;
     if (error) return <div>{error}</div>;
 
-
     return (
         <div>
             <h1>Pedidos</h1>
@@ -369,6 +368,18 @@ const Pedidos = () => {
                                                     <option value="">...</option>
                                                     <option value="Pagado">Pagado</option>
                                                     <option value="No pagado">No pagado</option>
+                                                </select>
+                                            ) : updateField === 'estado' ? (
+                                                <select
+                                                    id={`value-${pedido.id_pedido}`}
+                                                    value={updateValue}
+                                                    onChange={(e) => setUpdateValue(e.target.value)}
+                                                >
+                                                    <option value="">Seleccionar estado</option>
+                                                    <option value="Pendiente">Pendiente</option>
+                                                    <option value="En camino">En camino</option>
+                                                    <option value="Rechazado">Rechazado</option>
+                                                    <option value="Entregado">Entregado</option>
                                                 </select>
                                             ) : (
                                                 <input
