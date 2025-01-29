@@ -61,8 +61,8 @@ const OrderForm = () => {
 
       if (response.ok) {
         alert("Pedido realizado con éxito!");
-        navigate('/'); // Redirigir al usuario a la página principal
-      } else {
+        navigate('/estado-pedido/'); // Redirigir al estados de los pedidos del cliente 
+      } else { 
         alert("Error al realizar el pedido: " + data.error);
       }
     } catch (error) {

@@ -17,6 +17,11 @@ const Dashboard = () => {
             <Link to="/admin/platos">
                 <button>Ver platos</button>
             </Link>
+            {/* Enlace para registrar Repartidor */}
+
+            <Link to="/admin/repartidores">
+                <button>Gestionar repartidores</button>
+            </Link>
         </div>
     );
 };
