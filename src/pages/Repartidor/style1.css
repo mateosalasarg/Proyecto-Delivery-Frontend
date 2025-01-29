@@ -1,3 +1,75 @@
+/* .driver-profile: Contenedor principal de la información del repartidor */
+.driver-profile {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  padding: 20px;
+  margin: 0;
+}
+
+/* .driver-info: Contenedor de la información del repartidor */
+.driver-info {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* Títulos */
+h2, h3, h4 {
+  color: #333;
+}
+
+/* .orders-list: Contenedor de la lista de pedidos */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* .order-item: Estilo para cada pedido */
+.order-item {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+/* Estados de los pedidos */
+.completed {
+  background-color: #d4edda;
+}
+
+.rejected {
+  background-color: #f8d7da;
+}
+
+.order-item h3 {
+  margin-top: 0;
+  color: #007bff;
+}
+
+/* .order-details: Detalles de cada pedido */
+.order-details ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.order-details li {
+  margin-bottom: 5px;
+}
+
+/* Botones de acción */
+button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Botón de disponibilidad */
 .btn-disponible {
   background-color: green;
   color: white;
@@ -6,4 +78,30 @@
 .btn-no-disponible {
   background-color: red;
   color: white;
+}
+
+/* Botón de "No Disponible" - estado adicional */
+.btn-no-disponible-red {
+  background-color: darkred;
+  color: white;
+}
+
+/* Botones de acción para pedidos */
+button:hover {
+  opacity: 0.8;
+}
+
+button:focus {
+  outline: none;
+}
+
+/* Mensajes de estado */
+.completed-message {
+  color: green;
+  font-weight: bold;
+}
+
+.rejected-message {
+  color: red;
+  font-weight: bold;
 }

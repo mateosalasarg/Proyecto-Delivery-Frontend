@@ -8,6 +8,7 @@ const DriverProfile = () => {
   const { driver, setDriver } = useContext(AuthContext); // Contexto para manejar el estado del repartidor
   const [pedidos, setPedidos] = useState([]);
   const [error, setError] = useState(null); // Estado para manejar el error
+    const { logout } = useContext(AuthContext); // Obtén la función de logout desde el contexto
 
   useEffect(() => {
     if (!driver) {
@@ -72,6 +73,13 @@ const DriverProfile = () => {
       `El pedido #${id} fue marcado como "En camino".`
     );
   };
+  const markAsEntregado = (id) => {
+    updatePedido(
+      id,
+      { field: "estado", value: "Entregado" },
+      `El pedido #${id} fue marcado como "Entregado".`
+    );
+  };
 
   const markAsRejected = (id) => {
     updatePedido(
@@ -116,34 +124,12 @@ const DriverProfile = () => {
         alert("No se pudo actualizar la disponibilidad del repartidor");
       });
   };
+  const handleLogout = () => {
+    logout(); // Llama a la función logout para eliminar la autenticación
+    navigate('/repartidor/login'); // Redirige a la página de login
+};
 
-  if (error) {
-    return (
-      <div className="driver-profile">
-        <div className="driver-info">
-          <h2>Información del Repartidor:</h2>
-          <p><strong>Nombre:</strong> {driver.nombre}</p>
-          <p><strong>Disponible:</strong> {driver.disponible === 1 ? "Sí" : "No"}</p>
-          <p><strong>Teléfono:</strong> {driver.telefono}</p>
-        </div>
-        <div>{error}</div>
-      </div>
-    );
-  }
 
-  if (!pedidos.length) {
-    return (
-      <div className="driver-profile">
-        <div className="driver-info">
-          <h2>Información del Repartidor:</h2>
-          <p><strong>Nombre:</strong> {driver.nombre}</p>
-          <p><strong>Disponible:</strong> {driver.disponible === 1 ? "Sí" : "No"}</p>
-          <p><strong>Teléfono:</strong> {driver.telefono}</p>
-        </div>
-        <div>No tiene pedidos asignados, comuníquese con el administrador.</div>
-      </div>
-    );
-  }
 
   return (
     <div className="driver-profile">
@@ -152,7 +138,8 @@ const DriverProfile = () => {
         <p><strong>Nombre:</strong> {driver.nombre}</p>
         <p><strong>Disponible:</strong> {driver.disponible === 1 ? "Sí" : "No"}</p>
         <p><strong>Teléfono:</strong> {driver.telefono}</p>
-        
+        <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
+
         {/* Botones para cambiar el estado de disponibilidad */}
         <button
           className={driver.disponible === 1 ? "btn-disponible" : "btn-no-disponible"}
@@ -195,6 +182,17 @@ const DriverProfile = () => {
                   </li>
                 ))}
               </ul>
+              {pedido.estado === "En camino" && (
+                <div style={{ marginTop: "10px" }}>
+                  <button onClick={() => markAsEntregado(pedido.id_pedido)} style={{ marginRight: "10px" }}>
+                    Marcar como Entregado
+                  </button>
+                  <button onClick={() => markAsRejected(pedido.id_pedido)} className="reject-button">
+                    Rechazar Pedido
+                  </button>
+                </div>
+              )}
+
             </div>
             {pedido.estado === "Pendiente" && (
               <div style={{ marginTop: "10px" }}>
@@ -204,6 +202,7 @@ const DriverProfile = () => {
                 <button onClick={() => markAsRejected(pedido.id_pedido)} className="reject-button">
                   Rechazar Pedido
                 </button>
+                
               </div>
             )}
             {pedido.estado === "Entregado" && <p className="completed-message">Pedido Entregado</p>}

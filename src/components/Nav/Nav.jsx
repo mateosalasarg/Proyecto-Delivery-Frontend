@@ -30,17 +30,30 @@ const Nav = () => {
         navigate('/order', { state: { carrito } });
     };
 
+    // Funciones de navegación
+    const handleNavigateHome = () => {
+        navigate('/home');
+    };
+
+    const handleNavigateOrders = () => {
+        navigate('/estado-pedido');
+    };
+
+    // Redirigir al login
+    const handleLogin = () => {
+        navigate('/'); // Redirige a la página de inicio
+    };
+
     return (
         <>
             <nav className="nav">
                 <img src={assets.logo} alt="Logo" className="logo" />
                 <ul className="nav-links">
-                    <li>Inicio</li>
-                    <li>Mis pedidos</li>
+                    <li onClick={handleNavigateHome}>Inicio</li> {/* Redirige a /home */}
+                    <li onClick={handleNavigateOrders}>Mis pedidos</li> {/* Redirige a /estado-pedido */}
                     <li>Contáctanos</li>
                 </ul>
                 <div className="nav-right">
-                    <img src={assets.search_icon} alt="Buscar" className="icon" />
                     <div className="nav-search-icon" onClick={toggleCartMenu}>
                         <img src={assets.bowl_icon} alt="Bowl" className="icon" />
                         {totalItems > 0 && (
@@ -57,7 +70,9 @@ const Nav = () => {
                             </button>
                         </div>
                     ) : (
-                        <button className="nav-button">Iniciar sesión</button>
+                        <button className="nav-button" onClick={handleLogin}>
+                            Iniciar sesión
+                        </button>
                     )}
                 </div>
             </nav>

@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
-// Crea el contexto para la autenticación tanto del cliente como del repartidor
+// Crea el contexto para la autenticación tanto del cliente como del repartidor y administrador
 const AuthContext = createContext();
 
 // Crea el proveedor de autenticación
@@ -11,6 +11,8 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(); // Estado para el cliente
     const [isDriverAuthenticated, setIsDriverAuthenticated] = useState(false); // Estado para el repartidor
     const [driver, setDriver] = useState(); // Estado para el repartidor
+    const [isAdminAuthenticated, setAdminAuthenticated] = useState(false); // Estado para el administrador
+    const [admin, setAdmin] = useState(); // Estado para el administrador
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,8 +20,11 @@ const AuthProvider = ({ children }) => {
         const storedUserAuth = localStorage.getItem('isAuthenticated');
         let storedUser = null;
         const storedDriverAuth = localStorage.getItem('isDriverAuthenticated');
-
         let storedDriver = null;
+        const storedAdminAuth = localStorage.getItem('isAdminAuthenticated');
+        
+        let storedAdmin = null;
+
         // Verifica si el valor en localStorage está disponible antes de intentar parsearlo
         const storedDriverData = localStorage.getItem('driver');
         if (storedDriverData) {
@@ -27,6 +32,15 @@ const AuthProvider = ({ children }) => {
             storedDriver = JSON.parse(storedDriverData);
           } catch (error) {
             console.error("Error al intentar parsear los datos del repartidor:", error);
+          }
+        }
+
+        const storedAdminData = localStorage.getItem('admin');
+        if (storedAdminData) {
+          try {
+            storedAdmin = JSON.parse(storedAdminData);
+          } catch (error) {
+            console.error("Error al intentar parsear los datos del administrador:", error);
           }
         }
 
@@ -43,9 +57,13 @@ const AuthProvider = ({ children }) => {
         }
 
         if (storedDriverAuth === 'true' && storedDriver) {
-            console.log('Stored driver:', storedDriver);  // Verifica los datos del repartidor
             setIsDriverAuthenticated(true);
             setDriver(storedDriver);
+        }
+
+        if (storedAdminAuth === 'true' && storedAdminData) {
+            setAdminAuthenticated(true);
+            setAdmin(storedAdmin);
         }
     }, []);
 
@@ -58,17 +76,23 @@ const AuthProvider = ({ children }) => {
     };
 
     const loginDriver = (driverData) => {
-        console.log('Driver data received:', driverData); // Verifica que se reciben todos los datos
         if (driverData && driverData.id_repartidor) { // Asegúrate de que el `id_repartidor` esté presente
             setIsDriverAuthenticated(true);
             setDriver(driverData);
             localStorage.setItem('isDriverAuthenticated', 'true');
             localStorage.setItem('driver', JSON.stringify(driverData));
-            console.log('Driver data saved to localStorage:', JSON.stringify(driverData));
             navigate(`/repartidor/${driverData.id_repartidor}`);
         } else {
             console.error('No driver id_repartidor or data received!');
         }
+    };
+
+    const loginAdmin = (adminData) => {
+        setAdminAuthenticated(true);
+        setAdmin(adminData);
+        localStorage.setItem('isAdminAuthenticated', 'true');
+        localStorage.setItem('admin', JSON.stringify(adminData));
+        navigate('/admin'); // Redirige al panel de administración o la página correspondiente
     };
 
     const logout = () => {
@@ -76,10 +100,14 @@ const AuthProvider = ({ children }) => {
         setUser(null);
         setIsDriverAuthenticated(false);
         setDriver(null);
+        setAdminAuthenticated(false);
+        setAdmin(null);
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('user');
         localStorage.removeItem('isDriverAuthenticated');
         localStorage.removeItem('driver');
+        localStorage.removeItem('isAdminAuthenticated');
+        localStorage.removeItem('admin');
         navigate('/'); // Redirige a la página de login
     };
 
@@ -89,8 +117,11 @@ const AuthProvider = ({ children }) => {
             user, 
             isDriverAuthenticated, 
             driver, 
+            isAdminAuthenticated, // Agregado el estado del admin
+            admin, // Agregado el admin
             loginClient, 
             loginDriver, 
+            loginAdmin, // Agregado el login del admin
             logout,
             setDriver // Asegúrate de que setDriver esté aquí
         }}>
