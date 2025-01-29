@@ -240,3 +240,23 @@ form .form-actions {
     justify-content: flex-start;
     gap: 10px;
 }
+/* Agrega estas clases al final de tu archivo CSS */
+.estado-pendiente {
+    background-color: orange;
+    color: white;
+}
+
+.estado-en-camino {
+    background-color: green;
+    color: white;
+}
+
+.estado-rechazado {
+    background-color: red;
+    color: white;
+}
+
+.estado-entregado {
+    background-color: #d3d3d3; /* Gris claro para simular "deshabilitado" */
+    color: #a9a9a9; /* Texto gris */
+}

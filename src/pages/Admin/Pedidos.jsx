@@ -238,6 +238,21 @@ const Pedidos = () => {
         }
     };
 
+    const getClassByEstado = (estado) => {
+        switch (estado) {
+            case 'Pendiente':
+                return 'estado-pendiente';
+            case 'En camino':
+                return 'estado-en-camino';
+            case 'Rechazado':
+                return 'estado-rechazado';
+            case 'Entregado':
+                return 'estado-entregado';
+            default:
+                return '';
+        }
+    };
+
     if (loading) return <div>Cargando pedidos...</div>;
     if (error) return <div>{error}</div>;
 
@@ -260,7 +275,7 @@ const Pedidos = () => {
                 <tbody>
                     {pedidos.map((pedido) => (
                         <React.Fragment key={pedido.id_pedido}>
-                            <tr>
+                            <tr className={getClassByEstado(pedido.estado)}>
                                 <td>
                                     <button onClick={() => fetchClienteInfo(pedido.id_cliente)}>
                                         Info del Cliente
@@ -277,9 +292,10 @@ const Pedidos = () => {
                                     <button onClick={() => setIsAgregarPlatoModalOpen(true)}>Agregar Plato</button>
                                 </td>
                                 <td>
-                                    {Number(pedido.pagado) === 1 ? "Pagado" : "No pagado"}</td>
+                                    {Number(pedido.pagado) === 1 ? "Pagado" : "No pagado"}
+                                </td>
                             </tr>
-
+    
                             {expandedPedidoId === pedido.id_pedido && (
                                 <tr>
                                     <td colSpan="7">
@@ -309,7 +325,7 @@ const Pedidos = () => {
                                                 ))}
                                             </tbody>
                                         </table>
-                                                                          
+    
                                         <h3>Actualizar Pedido</h3>
                                         <form
                                             onSubmit={(e) => {
@@ -329,7 +345,7 @@ const Pedidos = () => {
                                                 <option value="id_repartidor">Repartidor</option>
                                                 <option value="pagado">Pagado</option>
                                             </select>
-
+    
                                             <label htmlFor={`value-${pedido.id_pedido}`}>Nuevo Valor:</label>
                                             {updateField === 'id_repartidor' ? (
                                                 <select
@@ -362,7 +378,7 @@ const Pedidos = () => {
                                                     onChange={(e) => setUpdateValue(e.target.value)}
                                                 />
                                             )}
-
+    
                                             <button type="submit">Actualizar</button>
                                         </form>
                                     </td>
@@ -372,7 +388,7 @@ const Pedidos = () => {
                     ))}
                 </tbody>
             </table>
-
+    
             {/* Modal para agregar plato */}
             {isAgregarPlatoModalOpen && (
                 <div className="modal">
@@ -383,16 +399,16 @@ const Pedidos = () => {
                             {availablePlatos.map(plato => (
                                 <option key={plato.id_plato} value={JSON.stringify(plato)}>
                                     {plato.nombre} - ${plato.precio} - {plato.disponible === 1 ? 'Disponible' : 'No disponible'}
-                                    </option>
+                                </option>
                             ))}
                         </select>
                         <br />
                         <button onClick={() => addPlatoToPedido(expandedPedidoId)}>Agregar Plato</button>
-                        <button onClick={() => setIsModalOpen(false)}>Cerrar</button>
+                        <button onClick={() => setIsAgregarPlatoModalOpen(false)}>Cerrar</button>
                     </div>
                 </div>
             )}
-
+    
             {/* Modal para información del cliente */}
             {isClienteModalOpen && selectedCliente && (
                 <div className="modal">
