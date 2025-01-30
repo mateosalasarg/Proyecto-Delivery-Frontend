@@ -35,7 +35,7 @@ const Platos = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get('http://127.0.0.1:5000/platos');
+            const response = await axios.get('https://deliverynono.pythonanywhere.com/platos');
             setPlatos(response.data);
         } catch (err) {
             setError('Error al cargar los platos');
@@ -49,7 +49,7 @@ const Platos = () => {
         formData.append('image', file);
 
         try {
-            const response = await axios.post('http://127.0.0.1:5000/imagen', formData, {
+            const response = await axios.post('https://deliverynono.pythonanywhere.com/imagen', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -86,7 +86,7 @@ const Platos = () => {
                 imagen: uploadedImage
             };
 
-            const response = await axios.post('http://127.0.0.1:5000/platos/crear', updatedPlato);
+            const response = await axios.post('https://deliverynono.pythonanywhere.com/platos/crear', updatedPlato);
             alert(response.data.message);
             setShowCreateForm(false);
             fetchPlatos();
@@ -104,7 +104,7 @@ const Platos = () => {
         }
 
         try {
-            await axios.put(`http://127.0.0.1:5000/platos/${id_plato}`, { field, value });
+            await axios.put(`https://deliverynono.pythonanywhere.com/platos/${id_plato}`, { field, value });
             fetchPlatos();
             setEditPlato(null);
             alert('Plato actualizado con éxito');

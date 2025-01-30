@@ -28,7 +28,7 @@ const OrderForm = () => {
     e.preventDefault();
 
     try {
-      const repartidorResponse = await fetch("http://127.0.0.1:5000/repartidores/disponibles");
+      const repartidorResponse = await fetch("https://deliverynono.pythonanywhere.com/repartidores/disponibles");
       const repartidores = await repartidorResponse.json();
 
       if (repartidores.length === 0) {
@@ -49,7 +49,7 @@ const OrderForm = () => {
         comentarios: comments || "",
       };
 
-      const response = await fetch("http://127.0.0.1:5000/pedidos/crear", {
+      const response = await fetch("https://deliverynono.pythonanywhere.com/pedidos/crear", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

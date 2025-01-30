@@ -17,7 +17,7 @@ const OrderStatus = () => {
       }
 
       try {
-        const response = await fetch(`http://127.0.0.1:5000/pedidos/clientes/${user.id_cliente}`);
+        const response = await fetch(`https://deliverynono.pythonanywhere.com/pedidos/clientes/${user.id_cliente}`);
         const data = await response.json();
 
         if (response.ok) {
@@ -26,7 +26,7 @@ const OrderStatus = () => {
           // Aquí hacemos una solicitud para obtener el nombre del repartidor
           const repartidorId = data[0]?.id_repartidor;
           if (repartidorId) {
-            const repartidorResponse = await fetch(`http://127.0.0.1:5000/repartidores/${repartidorId}`);
+            const repartidorResponse = await fetch(`https://deliverynono.pythonanywhere.com/repartidores/${repartidorId}`);
             const repartidorData = await repartidorResponse.json();
             setRepartidorDetails(repartidorData);
           }
@@ -35,7 +35,7 @@ const OrderStatus = () => {
           const platosIds = data[0]?.detalles.map(item => item.id_plato);
           if (platosIds && platosIds.length > 0) {
             const platosPromises = platosIds.map(id =>
-              fetch(`http://127.0.0.1:5000/platos/${id}`).then(res => res.json())
+              fetch(`https://deliverynono.pythonanywhere.com/platos/${id}`).then(res => res.json())
             );
             const platosData = await Promise.all(platosPromises);
             setPlatosDetails(platosData);

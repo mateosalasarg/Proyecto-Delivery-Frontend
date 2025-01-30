@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../Admin/StylesAdmin/Repartidores.css";
 
-const API_URL = "http://127.0.0.1:5000/repartidores"; // Reemplaza con la URL real de tu API
-const API_CREAR_URL = "http://127.0.0.1:5000/repartidores/crear"; // URL para crear un repartidor
+const API_URL = "https://deliverynono.pythonanywhere.com/repartidores"; // Reemplaza con la URL real de tu API
+const API_CREAR_URL = "https://deliverynono.pythonanywhere.com/repartidores/crear"; // URL para crear un repartidor
 
 const Repartidores = () => {
   const [repartidores, setRepartidores] = useState([]);

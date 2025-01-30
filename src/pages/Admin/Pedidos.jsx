@@ -22,7 +22,7 @@ const Pedidos = () => {
     useEffect(() => {
         const fetchPedidos = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:5000/pedidos');
+                const response = await axios.get('https://deliverynono.pythonanywhere.com/pedidos');
                 setPedidos(response.data);
             } catch (err) {
                 setError('Error al cargar los pedidos');
@@ -33,7 +33,7 @@ const Pedidos = () => {
         };
         const fetchRepartidores = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:5000/repartidores/disponibles');
+                const response = await axios.get('https://deliverynono.pythonanywhere.com/repartidores/disponibles');
                 setRepartidores(response.data);
             } catch (err) {
                 console.error('Error al cargar los repartidores', err);
@@ -59,7 +59,7 @@ const Pedidos = () => {
 
         if (!repartidoresCargados[idRepartidor]) {
             try {
-                const repartidorResponse = await axios.get(`http://127.0.0.1:5000/repartidores/${idRepartidor}`);
+                const repartidorResponse = await axios.get(`https://deliverynono.pythonanywhere.com/repartidores/${idRepartidor}`);
                 setRepartidoresCargados(prevState => ({
                     ...prevState,
                     [idRepartidor]: repartidorResponse.data?.nombre || 'Desconocido',
@@ -93,7 +93,7 @@ const Pedidos = () => {
             // Cargar detalles de los platos solo si no están cargados
             if (Object.keys(platosDetalles).length === 0) {
                 try {
-                    const response = await axios.get('http://127.0.0.1:5000/platos');
+                    const response = await axios.get('https://deliverynono.pythonanywhere.com/platos');
                     const detalles = response.data.reduce((acc, plato) => {
                         acc[plato.id_plato] = plato;
                         return acc;
@@ -107,7 +107,7 @@ const Pedidos = () => {
             // Cargar platos disponibles solo si no están cargados
             if (availablePlatos.length === 0) {
                 try {
-                    const response = await axios.get('http://127.0.0.1:5000/platos?disponible=1');
+                    const response = await axios.get('https://deliverynono.pythonanywhere.com/platos?disponible=1');
                     setAvailablePlatos(response.data);
                 } catch (err) {
                     console.error('Error al cargar los platos disponibles', err);
@@ -125,7 +125,7 @@ const Pedidos = () => {
 
         try {
             const pedidoId = typeof id_pedido === 'object' ? id_pedido.id : id_pedido;
-            await axios.put(`http://127.0.0.1:5000/pedidos/${pedidoId}/modify-platos`, {
+            await axios.put(`https://deliverynono.pythonanywhere.com/pedidos/${pedidoId}/modify-platos`, {
                 action: 'add',
                 platos: [{
                     id_plato: selectedPlato.id_plato,
@@ -163,7 +163,7 @@ const Pedidos = () => {
 
     const removePlatoFromPedido = async (id_pedido, id_plato) => {
         try {
-            await axios.put(`http://127.0.0.1:5000/pedidos/${id_pedido}/modify-platos`, {
+            await axios.put(`https://deliverynono.pythonanywhere.com/pedidos/${id_pedido}/modify-platos`, {
                 action: 'remove',
                 platos: [{
                     id_plato,
@@ -202,7 +202,7 @@ const Pedidos = () => {
         }
 
         try {
-            await axios.put(`http://127.0.0.1:5000/pedidos/${id_pedido}`, {
+            await axios.put(`https://deliverynono.pythonanywhere.com/pedidos/${id_pedido}`, {
                 field: updateField,
                 value: valorFinal,
             });
@@ -228,7 +228,7 @@ const Pedidos = () => {
 
     const fetchClienteInfo = async (id_cliente) => {
         try {
-            const response = await axios.get(`http://127.0.0.1:5000/clientes/${id_cliente}`);
+            const response = await axios.get(`https://deliverynono.pythonanywhere.com/clientes/${id_cliente}`);
             console.log(response.data)
             setSelectedCliente(response.data);
             setIsClienteModalOpen(true);
@@ -255,7 +255,6 @@ const Pedidos = () => {
 
     if (loading) return <div>Cargando pedidos...</div>;
     if (error) return <div>{error}</div>;
-
     return (
         <div>
             <h1>Pedidos</h1>

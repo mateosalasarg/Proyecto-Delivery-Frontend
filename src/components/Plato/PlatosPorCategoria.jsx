@@ -17,7 +17,7 @@ const PlatosPorCategoria = ({ category, setPlatos }) => {
       setError('');  // Limpiamos el mensaje de error anterior
 
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/platos/${category}`);
+        const response = await axios.get(`https://deliverynono.pythonanywhere.com/platos/${category}`);
         setPlatos(response.data);  // Guardamos los platos en el estado
       } catch (error) {
         if (error.response && error.response.status === 404) {

@@ -16,7 +16,7 @@ const DriverProfile = () => {
       return;
     }
 
-    fetch(`http://127.0.0.1:5000/pedidos/repartidores/${driver.id_repartidor}`)
+    fetch(`https://deliverynono.pythonanywhere.com/pedidos/repartidores/${driver.id_repartidor}`)
       .then((response) => {
         if (response.status === 404) {
           setError("No tiene pedidos asignados, comuníquese con el administrador.");
@@ -37,7 +37,7 @@ const DriverProfile = () => {
   }, [driver, navigate]);
 
   const updatePedido = (id, body, successMessage) => {
-    fetch(`http://127.0.0.1:5000/pedidos/${id}`, {
+    fetch(`https://deliverynono.pythonanywhere.com/pedidos/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -94,7 +94,7 @@ const DriverProfile = () => {
     const nuevoEstado = driver.disponible === 1 ? 2 : 1;
     console.log("Nuevo estado:", nuevoEstado);
 
-    fetch(`http://127.0.0.1:5000/repartidores/${driver.id_repartidor}`, {
+    fetch(`https://deliverynono.pythonanywhere.com/repartidores/${driver.id_repartidor}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
