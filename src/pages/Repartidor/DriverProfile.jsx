@@ -10,31 +10,29 @@ const DriverProfile = () => {
   const [error, setError] = useState(null); // Estado para manejar el error
     const { logout } = useContext(AuthContext); // Obtén la función de logout desde el contexto
 
-  useEffect(() => {
-    if (!driver) {
-      navigate("/login");
-      return;
-    }
-
-    fetch(`https://deliverynono.pythonanywhere.com/pedidos/repartidores/${driver.id_repartidor}`)
-      .then((response) => {
-        if (response.status === 404) {
-          setError("No tiene pedidos asignados, comuníquese con el administrador.");
-          return []; // Si no tiene pedidos, retornamos un array vacío
-        }
-        if (!response.ok) {
-          throw new Error("Error al cargar los pedidos del repartidor");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setPedidos(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching orders:", error);
-        setError("Error al cargar los pedidos del repartidor");
-      });
-  }, [driver, navigate]);
+    const fetchPedidos = () => {
+      fetch(`https://deliverynono.pythonanywhere.com/pedidos/repartidores/${driver.id_repartidor}`)
+        .then((response) => {
+          if (response.status === 404) {
+            setError("No tiene pedidos asignados, comuníquese con el administrador.");
+            return [];
+          }
+          if (!response.ok) {
+            throw new Error("Error al cargar los pedidos del repartidor");
+          }
+          return response.json();
+        })
+        .then((data) => setPedidos(data))
+        .catch(() => setError("Error al cargar los pedidos del repartidor"));
+    };
+  
+    useEffect(() => {
+      if (!driver) {
+        navigate("/login");
+        return;
+      }
+      fetchPedidos();
+    }, [driver, navigate]);
 
   const updatePedido = (id, body, successMessage) => {
     fetch(`https://deliverynono.pythonanywhere.com/pedidos/${id}`, {
@@ -51,6 +49,7 @@ const DriverProfile = () => {
         return response.json();
       })
       .then(() => {
+
         setPedidos((prevPedidos) =>
           prevPedidos.map((pedido) =>
             pedido.id_pedido === id
@@ -58,6 +57,8 @@ const DriverProfile = () => {
               : pedido
           )
         );
+        fetchPedidos();
+
         alert(successMessage);
       })
       .catch((error) => {

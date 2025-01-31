@@ -68,7 +68,7 @@ const Login = () => {
   };
 
   return (
-    <div className={`container-form ${isRegistering ? "register" : "login"}`}>
+  <div className={`login-container ${isRegistering ? "register" : "login"}`}>
       {isRegistering ? (
         <>
           <div className="information">
