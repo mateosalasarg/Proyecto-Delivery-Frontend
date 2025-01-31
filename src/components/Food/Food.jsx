@@ -14,10 +14,10 @@ const Food = ({ category }) => {
         let response;
         if (category === '') {
           // Si no hay categoría seleccionada, cargar todos los platos
-          response = await fetch('http://127.0.0.1:5000/platos/');
+          response = await fetch('https://deliverynono.pythonanywhere.com/platos/');
         } else {
           // Si hay categoría, cargar los platos de esa categoría
-          response = await fetch(`http://127.0.0.1:5000/platos/${category}`);
+          response = await fetch(`https://deliverynono.pythonanywhere.com/platos/${category}`);
         }
 
         const data = await response.json();
